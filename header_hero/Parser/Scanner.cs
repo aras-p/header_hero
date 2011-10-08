@@ -16,7 +16,6 @@ namespace HeaderHero.Parser
         public List<string> Errors;
         public HashSet<string> NotFound;
 
-
         public Scanner(Data.Project p)
         {
             _project = p;
@@ -36,18 +35,17 @@ namespace HeaderHero.Parser
                 ScanDirectory(new DirectoryInfo(dir));
             }
 
-            int i = 0;
-            feedback.Count = _scan_queue.Count;
-            feedback.Item = 0;
-
+            int dequeued = 0;
+            
             while (_scan_queue.Count > 0)
             {
+                dequeued += _scan_queue.Count;
                 FileInfo[] to_scan = _scan_queue.ToArray();
                 _scan_queue.Clear();
                 foreach (FileInfo fi in to_scan)
                 {
-                    feedback.Count = to_scan.Length + _scan_queue.Count;
-                    feedback.Item = i;
+                    feedback.Count = dequeued + _scan_queue.Count;
+                    feedback.Item++;
                     feedback.Title = fi.Name;
                     ScanFile(fi);
                 }
