@@ -102,7 +102,8 @@ namespace HeaderHero.Parser
                 string abs = CanonicalPath(inc);
                 if (!inc.Exists)
                 {
-                    Errors.Add("Missing file: " + abs + " included by: " + fi.FullName);
+                    if (!sf.SystemIncludes.Contains(s))
+                        sf.SystemIncludes.Add(s);
                     continue;
                 }
                 sf.AbsoluteIncludes.Add(abs);
