@@ -35,21 +35,16 @@ namespace HeaderHero.Parser
                 {
                     int i = line.IndexOf('#');
                     int lt = line.IndexOf('<', i);
+                    int gt = line.IndexOf('>', lt + 1);
                     int qt = line.IndexOf('"', i);
-
-                    if (lt < 0 && qt < 0 || lt > 0 && qt > 0)
-                    {
-                        errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
-                        continue;
-                    }
-
-                    if (qt<0) {
-                        int gt = line.IndexOf('>', lt+1);
+                    int qt2 = line.IndexOf('"', qt + 1);
+                    
+                    if (lt>=0 && gt>=0 && qt<0)
                         res.SystemIncludes.Add(line.Substring(lt+1,gt-lt-1));
-                    } else {
-                        int qt2 = line.IndexOf('"', qt+1);
+                    else if (qt>=0 && qt2>=0 && lt<0)
                         res.LocalIncludes.Add(line.Substring(qt+1,qt2-qt-1));
-                    }
+                    else
+                        errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
                 }
             }
             return res;
