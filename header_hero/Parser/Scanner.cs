@@ -29,11 +29,15 @@ namespace HeaderHero.Parser
 
         public void Rescan(ProgressFeedback feedback)
         {
+            feedback.Title = "Scanning directories...";
+
             foreach (string dir in _project.ScanDirectories)
             {
                 feedback.Message = dir;
-                ScanDirectory(new DirectoryInfo(dir));
+                ScanDirectory(new DirectoryInfo(dir), feedback);
             }
+
+            feedback.Title = "Scanning files...";
 
             int dequeued = 0;
             
@@ -46,16 +50,18 @@ namespace HeaderHero.Parser
                 {
                     feedback.Count = dequeued + _scan_queue.Count;
                     feedback.Item++;
-                    feedback.Title = fi.Name;
+                    feedback.Message = fi.Name;
                     ScanFile(fi);
                 }
             }
         }
         
-        void ScanDirectory(DirectoryInfo di)
+        void ScanDirectory(DirectoryInfo di, ProgressFeedback feedback)
         {
             FileInfo[] files;
             DirectoryInfo[] subdirs;
+
+            feedback.Message = di.FullName;
 
             try
             {
@@ -71,11 +77,11 @@ namespace HeaderHero.Parser
             foreach (FileInfo file in files)
             {
                 if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc" || file.Extension == @".cxx")
-                    ScanFile(file);
+                    Enqueue(file, CanonicalPath(file));
             }
             foreach (DirectoryInfo subdir in subdirs)
                 if (!subdir.Name.StartsWith("."))
-                    ScanDirectory(subdir);
+                    ScanDirectory(subdir, feedback);
         }
 
         string CanonicalPath(FileInfo fi)
