@@ -98,46 +98,60 @@ namespace HeaderHero.Parser
 
             string local_dir = Path.GetDirectoryName(path);
             foreach (string s in sf.LocalIncludes) {
-                FileInfo inc = new FileInfo(Path.Combine(local_dir, s));
-                string abs = CanonicalPath(inc);
-                if (!inc.Exists)
+                try
                 {
-                    if (!sf.SystemIncludes.Contains(s))
-                        sf.SystemIncludes.Add(s);
-                    continue;
+                    FileInfo inc = new FileInfo(Path.Combine(local_dir, s));
+                    string abs = CanonicalPath(inc);
+                    if (!inc.Exists)
+                    {
+                        if (!sf.SystemIncludes.Contains(s))
+                            sf.SystemIncludes.Add(s);
+                        continue;
+                    }
+                    sf.AbsoluteIncludes.Add(abs);
+                    Enqueue(inc, abs);
                 }
-                sf.AbsoluteIncludes.Add(abs);
-                Enqueue(inc, abs);
+                catch (Exception e)
+                {
+                    Errors.Add(String.Format("Exception: \"{0}\" for #include \"{1}\"", e.Message, s));
+                }
             }
 
             foreach (string s in sf.SystemIncludes)
             {
-                if (_system_includes.ContainsKey(s))
+                try
                 {
-                    string abs = _system_includes[s];
-                    sf.AbsoluteIncludes.Add(abs);
-                }
-                else
-                {
-                    FileInfo found = null;
-
-                    foreach (string dir in _project.IncludeDirectories)
+                    if (_system_includes.ContainsKey(s))
                     {
-                        found = new FileInfo(Path.Combine(dir, s));
-                        if (found.Exists)
-                            break;
-                        found = null;
-                    }
-
-                    if (found != null)
-                    {
-                        string abs = CanonicalPath(found);
+                        string abs = _system_includes[s];
                         sf.AbsoluteIncludes.Add(abs);
-                        _system_includes[s] = abs;
-                        Enqueue(found, abs);
                     }
                     else
-                        NotFound.Add(s);
+                    {
+                        FileInfo found = null;
+
+                        foreach (string dir in _project.IncludeDirectories)
+                        {
+                            found = new FileInfo(Path.Combine(dir, s));
+                            if (found.Exists)
+                                break;
+                            found = null;
+                        }
+
+                        if (found != null)
+                        {
+                            string abs = CanonicalPath(found);
+                            sf.AbsoluteIncludes.Add(abs);
+                            _system_includes[s] = abs;
+                            Enqueue(found, abs);
+                        }
+                        else
+                            NotFound.Add(s);
+                    }
+                }
+                catch (Exception e)
+                {
+                     Errors.Add(String.Format("Exception: \"{0}\" for #include <{1}>", e.Message, s));
                 }
                 
             }
