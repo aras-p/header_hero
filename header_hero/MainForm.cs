@@ -39,8 +39,8 @@ namespace HeaderHero
         private void DisplayProject()
         {
             lastScanLabel.Text = _project.LastScan.ToString();
-            projectDirsTextBox.Text = String.Join("\r\n", _project.ScanDirectories);
-            includeDirsTextBox.Text = String.Join("\r\n", _project.IncludeDirectories);
+            projectDirsTextBox.Text = String.Join("\r\n", _project.ScanDirectories.ToArray());
+            includeDirsTextBox.Text = String.Join("\r\n", _project.IncludeDirectories.ToArray());
         }
 
         private void ParseProject()

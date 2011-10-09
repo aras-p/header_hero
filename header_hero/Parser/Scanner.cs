@@ -54,12 +54,12 @@ namespace HeaderHero.Parser
         
         void ScanDirectory(DirectoryInfo di)
         {
-            foreach (FileInfo file in di.EnumerateFiles())
+            foreach (FileInfo file in di.GetFiles())
             {
                 if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc")
                     ScanFile(file);
             }
-            foreach (DirectoryInfo subdir in di.EnumerateDirectories())
+            foreach (DirectoryInfo subdir in di.GetDirectories())
                 if (!subdir.Name.StartsWith("."))
                     ScanDirectory(subdir);
         }
