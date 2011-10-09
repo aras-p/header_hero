@@ -56,7 +56,7 @@ namespace HeaderHero.Parser
         {
             foreach (FileInfo file in di.GetFiles())
             {
-                if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc")
+                if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc" || file.Extension == @".cxx")
                     ScanFile(file);
             }
             foreach (DirectoryInfo subdir in di.GetDirectories())
