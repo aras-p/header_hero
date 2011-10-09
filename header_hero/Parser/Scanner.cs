@@ -12,6 +12,7 @@ namespace HeaderHero.Parser
         HashSet<string> _queued;
         List<FileInfo> _scan_queue;
         Dictionary<string, string> _system_includes;
+        public bool CaseSensitive { get; set; }
 
         public List<string> Errors;
         public HashSet<string> NotFound;
@@ -25,6 +26,20 @@ namespace HeaderHero.Parser
 
             Errors = new List<string>();
             NotFound = new HashSet<string>();
+
+            CaseSensitive = IsCaseSensitive();
+        }
+
+        private bool IsCaseSensitive()
+        {
+            foreach (string dir in _project.ScanDirectories)
+            {
+                DirectoryInfo dl = new DirectoryInfo(dir.ToLowerInvariant());
+                DirectoryInfo du = new DirectoryInfo(dir.ToUpperInvariant());
+                if (dl.Exists != du.Exists || dl.CreationTime != du.CreationTime || dl.LastAccessTime != du.LastAccessTime)
+                    return true;
+            }
+            return false;
         }
 
         public void Rescan(ProgressFeedback feedback)
@@ -86,7 +101,10 @@ namespace HeaderHero.Parser
 
         string CanonicalPath(FileInfo fi)
         {
-            return fi.FullName;
+            if (CaseSensitive)
+                return fi.FullName;
+            else
+                return fi.FullName.ToLowerInvariant();
         }
 
         void Enqueue(FileInfo inc, string abs)
