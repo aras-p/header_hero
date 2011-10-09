@@ -46,6 +46,9 @@ namespace HeaderHero.Parser
         {
             feedback.Title = "Scanning directories...";
 
+            foreach (Data.SourceFile sf in _project.Files.Values)
+                sf.Touched = false;
+
             foreach (string dir in _project.ScanDirectories)
             {
                 feedback.Message = dir;
@@ -69,6 +72,9 @@ namespace HeaderHero.Parser
                     ScanFile(fi);
                 }
             }
+
+            foreach (var it in _project.Files.Where(kvp => !kvp.Value.Touched).ToList())
+                _project.Files.Remove(it.Key);
         }
         
         void ScanDirectory(DirectoryInfo di, ProgressFeedback feedback)
@@ -132,6 +138,7 @@ namespace HeaderHero.Parser
                 _project.Files[path] = sf;
             }
 
+            sf.Touched = true;
             sf.AbsoluteIncludes.Clear();
 
             string local_dir = Path.GetDirectoryName(path);
