@@ -54,12 +54,26 @@ namespace HeaderHero.Parser
         
         void ScanDirectory(DirectoryInfo di)
         {
-            foreach (FileInfo file in di.GetFiles())
+            FileInfo[] files;
+            DirectoryInfo[] subdirs;
+
+            try
+            {
+                files = di.GetFiles();
+                subdirs = di.GetDirectories();
+            }
+            catch (Exception e)
+            {
+                Errors.Add(string.Format("Cannot descend into {0}: {1}", di.FullName, e.Message));
+                return;
+            }
+
+            foreach (FileInfo file in files)
             {
                 if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc" || file.Extension == @".cxx")
                     ScanFile(file);
             }
-            foreach (DirectoryInfo subdir in di.GetDirectories())
+            foreach (DirectoryInfo subdir in subdirs)
                 if (!subdir.Name.StartsWith("."))
                     ScanDirectory(subdir);
         }
