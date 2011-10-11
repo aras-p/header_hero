@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Parser\Analytics.cs" />
     <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Report.cs" />
     <Compile Include="Parser\Scanner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgressDialog.cs">
