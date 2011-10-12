@@ -34,14 +34,20 @@ namespace HeaderHero
         {
 			mainWindowController.lastScanTextField.StringValue = _project.LastScan.ToString();
 			
-            mainWindowController.projectDirsTextField.StringValue = String.Join("\n", _project.ScanDirectories.ToArray());
-            mainWindowController.includeDirsTextField.StringValue = String.Join("\n", _project.IncludeDirectories.ToArray());
+			NSAttributedString projects = new NSAttributedString(String.Join("\n", _project.ScanDirectories.ToArray()));
+            mainWindowController.projectDirsTextView.TextStorage.SetString ( projects );
+			
+			NSAttributedString includes = new NSAttributedString(String.Join("\n", _project.IncludeDirectories.ToArray()));
+            mainWindowController.includeDirsTextView.TextStorage.SetString ( includes);
         }
 
         private void ParseProject()
         {
-            _project.ScanDirectories = mainWindowController.projectDirsTextField.StringValue.Trim().Split('\n').Where(s => s.Trim().Length > 0).ToList();
-            _project.IncludeDirectories = mainWindowController.includeDirsTextField.StringValue.Trim().Split('\n').Where(s => s.Trim().Length > 0).ToList();
+			string projects = mainWindowController.projectDirsTextView.TextStorage.Value;
+            _project.ScanDirectories = projects.Trim().Split('\n').Where(s => s.Trim().Length > 0).ToList();
+            
+			string includes = mainWindowController.projectDirsTextView.TextStorage.Value;
+			_project.IncludeDirectories = includes.Trim().Split('\n').Where(s => s.Trim().Length > 0).ToList();
         }
 		
 		#endregion

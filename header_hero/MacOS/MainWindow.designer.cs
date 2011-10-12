@@ -8,21 +8,21 @@ using MonoMac.Foundation;
 
 namespace HeaderHero
 {
+	[Register ("MainWindow")]
+	partial class MainWindow
+	{
+	}
+
 	[Register ("MainWindowController")]
 	partial class MainWindowController
 	{
 		[Outlet]
+		public MonoMac.AppKit.NSTextView projectDirsTextView { get; set; }
+
+		[Outlet]
+		public MonoMac.AppKit.NSTextView includeDirsTextView { get; set; }
+
+		[Outlet]
 		public MonoMac.AppKit.NSTextField lastScanTextField { get; set; }
-
-		[Outlet]
-		public MonoMac.AppKit.NSTextField includeDirsTextField { get; set; }
-
-		[Outlet]
-		public MonoMac.AppKit.NSTextField projectDirsTextField { get; set; }
-	}
-
-	[Register ("MainWindow")]
-	partial class MainWindow
-	{
 	}
 }
