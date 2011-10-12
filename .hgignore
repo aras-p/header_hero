@@ -5,3 +5,5 @@ bin
 
 *.user
 *.suo
+*.DS_Store
+*.pidb

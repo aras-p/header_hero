@@ -28,7 +28,7 @@ namespace HeaderHero.Parser
 
         void GenerateCss()
         {
-            File.WriteAllBytes(CssFile, Encoding.UTF8.GetBytes(Properties.Resources.Css));
+            File.WriteAllBytes(CssFile, Encoding.UTF8.GetBytes(_css));
         }
 
         void AppendSummary(StringBuilder sb, IDictionary<string, string> count)
@@ -51,7 +51,7 @@ namespace HeaderHero.Parser
 
         void GenerateHtml()
         {
-            string html = Properties.Resources.Html;
+            string html = _html;
 
             StringBuilder sb = new StringBuilder();
 
@@ -96,5 +96,64 @@ namespace HeaderHero.Parser
             r.Generate();
             return r.HtmlFile;
         }
+		
+		static private string _css = @"
+/* Reset */
+
+* {margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline}
+body {line-height:1;color:black;background:white}
+ol,ul {list-style:none}
+table {border-collapse:separate;border-spacing:0}
+caption,th,td {text-align:left;font-weight:normal}
+a {text-decoration:none;}
+
+body {
+  background: #fff; 
+  font: 12px/16px 'Segoe UI', 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;
+  font-weight: normal;
+  overflow-y: scroll;
+  margin: 10px;
+}
+
+h1 {
+  font: 16px;
+  margin: 10px 0px 10px 0px;
+}
+
+h2 {
+  font: 16px;
+  margin: 10px 0px 10px 0px;
+}
+
+.summary {
+  margin-left: 10px;
+}
+
+.summary th {
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.list {
+  margin-left: 20px;
+}
+
+.list th {
+  text-align: right;
+  padding-right: 10px;
+}";
+		static private string _html = @"
+<html>
+<head>
+    <link rel='stylesheet' type='text/css' media='screen' href='header_hero_report.css'/>
+</head>
+<body>
+
+<h1>Report</h1>
+
+%CONTENT%
+
+</body>
+</html>".Replace ("'", "\"");
     }
 }
