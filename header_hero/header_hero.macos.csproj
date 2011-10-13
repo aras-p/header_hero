@@ -64,6 +64,7 @@
       <DependentUpon>ReportWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Parser\Report.cs" />
+    <Compile Include="Properties\Settings.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="MacOS\MainMenu.xib" />
@@ -72,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
+    <None Include="Properties\Settings.settings" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />

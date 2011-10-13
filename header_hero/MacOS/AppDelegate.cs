@@ -24,8 +24,12 @@ namespace HeaderHero
 			mainWindowController = new MainWindowController ();
 			mainWindowController.Window.MakeKeyAndOrderFront (this);
 			
+			string last_project = Properties.Settings.Default.LastProject;
 			_project = new Data.Project();
-            DisplayProject();
+            if (last_project != null && last_project != "" && System.IO.File.Exists(last_project)) {
+				Open (last_project);
+			}
+			DisplayProject();
 		}
 		
 		#region Project
@@ -98,7 +102,8 @@ namespace HeaderHero
 		private void Open(string path)
         {
             _file = path;
-            // Properties.Settings.Default.LastProject = _file;
+            Properties.Settings.Default.LastProject = _file;
+			Properties.Settings.Default.Save();
             _project = new Data.Project();
             JsonSerializer.Load(_project, Sjson.Load(_file));
             MarkSave();
@@ -108,7 +113,8 @@ namespace HeaderHero
 		void Save(string path)
 		{
 			_file = path;
-   			// Properties.Settings.Default.LastProject = _file;
+   			Properties.Settings.Default.LastProject = _file;
+			Properties.Settings.Default.Save();
             ParseProject();
             Sjson.Save(JsonSerializer.Save(_project), _file);
             MarkSave();
