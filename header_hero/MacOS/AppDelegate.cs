@@ -32,6 +32,14 @@ namespace HeaderHero
 			DisplayProject();
 		}
 		
+		public override NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
+		{
+			if (CheckSave ())
+				return NSApplicationTerminateReply.Now;
+			else
+				return NSApplicationTerminateReply.Cancel;
+		}
+		
 		#region Project
 		
 		private void DisplayProject()
@@ -58,26 +66,28 @@ namespace HeaderHero
 		
 		#region File Menu
 		
-		delegate void Complete();
-		
-		private void CheckSave(Complete complete)
+		private bool CheckSave()
         {
             ParseProject();
             if (_last_save == Sjson.Encode(JsonSerializer.Save(_project)))
-                ; // Call delegate and return
+                return true;
+			
 			NSAlert alert = new NSAlert();
 			alert.AddButton(@"Save");
-			alert.AddButton(@"Cancel");
 			alert.AddButton(@"Don't Save");
+			alert.AddButton(@"Cancel");
 			alert.MessageText = @"Do you want to save changes to this document before closing?";
 			alert.InformativeText = @"If you don't save, your changes will be lost.";
 			alert.AlertStyle = NSAlertStyle.Informational;
 			
-			alert.BeginSheet (mainWindowController.Window, delegate {
-				alert.Dispose();
-				alert = null;
-				
-			});
+			int result = alert.RunModal();
+			if (result == (int)NSAlertButtonReturn.First) {
+				saveProject (null);
+				return _file != null;
+			} else if (result == (int)NSAlertButtonReturn.Second)
+				return true;
+			else
+				return false;
         }
 		
 		private void MarkSave()
@@ -91,12 +101,21 @@ namespace HeaderHero
 		
 		partial void newProject (NSObject sender)
 		{
-			// if (CheckSave())
-            
-            _file = null;
-            _project = new Data.Project();
-            DisplayProject();
-            MarkSave();
+			if (CheckSave()) {
+	            _file = null;
+	            _project = new Data.Project();
+	            DisplayProject();
+	            MarkSave();
+			}
+		}
+		
+		partial void closeProject (NSObject sender)
+		{
+			NSWindow window = NSApplication.SharedApplication.MainWindow;
+			if (window == mainWindowController.Window)
+				newProject (sender);
+			else
+				window.PerformClose(sender);
 		}
 		
 		private void Open(string path)
@@ -122,14 +141,14 @@ namespace HeaderHero
 		
 		partial void openProject (NSObject sender)
 		{
-			// if (CheckSave())
-			
-			NSOpenPanel panel = NSOpenPanel.OpenPanel;
-			panel.AllowedFileTypes = new string[] {@"header_hero"};
-			panel.BeginSheet (mainWindowController.Window, (result) => {
-				if (result == (int)NSPanelButtonType.Ok)
-					Open(panel.Url.Path);
-			});
+			if (CheckSave()) {
+				NSOpenPanel panel = NSOpenPanel.OpenPanel;
+				panel.AllowedFileTypes = new string[] {@"header_hero"};
+				panel.BeginSheet (mainWindowController.Window, (result) => {
+					if (result == (int)NSPanelButtonType.Ok)
+						Open(panel.Url.Path);
+				});
+			}
 		}
 		
 		partial void saveProject (NSObject sender)

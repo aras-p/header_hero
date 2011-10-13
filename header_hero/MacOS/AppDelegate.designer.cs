@@ -14,11 +14,11 @@ namespace HeaderHero
 		[Action ("newProject:")]
 		partial void newProject (MonoMac.Foundation.NSObject sender);
 
-		[Action ("openProject:")]
-		partial void openProject (MonoMac.Foundation.NSObject sender);
-
 		[Action ("closeProject:")]
 		partial void closeProject (MonoMac.Foundation.NSObject sender);
+
+		[Action ("openProject:")]
+		partial void openProject (MonoMac.Foundation.NSObject sender);
 
 		[Action ("saveProject:")]
 		partial void saveProject (MonoMac.Foundation.NSObject sender);
