@@ -18,5 +18,11 @@ namespace HeaderHero
 	{
 		[Outlet]
 		MonoMac.WebKit.WebView reportView { get; set; }
+
+		[Outlet]
+		MonoMac.AppKit.NSTextView errorsTextView { get; set; }
+
+		[Outlet]
+		MonoMac.AppKit.NSTextView missingFilesTextView { get; set; }
 	}
 }

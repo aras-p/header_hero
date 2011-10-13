@@ -48,14 +48,11 @@ namespace HeaderHero
 		
 		public override void AwakeFromNib()
 		{
-			/*
-			errorsListView.Items.Clear();
-            foreach (string s in scanner.Errors)
-                errorsListView.Items.Add(s);
-            missingFilesListView.Items.Clear();
-            foreach (string s in scanner.NotFound.OrderBy(s => s))
-                missingFilesListView.Items.Add(s);
-			 */
+			string errors = String.Join ("\n", _scanner.Errors);
+			errorsTextView.TextStorage.SetString(new NSAttributedString(errors));
+			
+			string missing = String.Join ("\n", _scanner.NotFound.OrderBy(s => s));
+			missingFilesTextView.TextStorage.SetString(new NSAttributedString(missing));
 			
             string file = Parser.Report.Generate(_project, _analytics);
 			
