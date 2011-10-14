@@ -21,6 +21,64 @@ namespace HeaderHero.Parser
             }
         };
 
+        enum States { Start, Hash, Include, AngleBracket, Quote }
+        enum ParseResult { Ok, Error }
+
+        static ParseResult ParseLine(string line, Result result)
+        {
+            int i = 0;
+            int path_start = 0;
+            States state = States.Start;
+
+            while (true) {
+                if (i >= line.Length)
+                    return ParseResult.Error;
+
+                char c = line[i];
+                ++i;
+               
+                if (c == ' ' || c == '\t') {
+                
+                } else if (state == States.Start) {
+                    if (c == '#')
+                        state = States.Hash;
+                    else if (c == '/') {
+                        if (i >= line.Length)
+                            return ParseResult.Error;
+                        if (line[i] == '/')
+                            return ParseResult.Ok; // Matched C++ style comment
+                    } else
+                        return ParseResult.Error;
+                } else if (state == States.Hash) {
+                    --i;
+                    if (line.IndexOf("include", i) == i) {
+                        i += 7;
+                        state = States.Include;
+                    } else
+                        return ParseResult.Ok; // Matched preprocessor other than #include
+                } else if (state == States.Include) {
+                    if (c == '<') {
+                        path_start = i;
+                        state = States.AngleBracket;
+                    } else if (c == '"') {
+                        path_start = i;
+                         state = States.Quote;
+                    } else
+                        return ParseResult.Error;
+                } else if (state == States.AngleBracket) {
+                    if (c == '>') {
+                        result.SystemIncludes.Add(line.Substring(path_start, i-path_start-1));
+                        return ParseResult.Ok;
+                    }
+                } else if (state == States.Quote) {
+                    if (c == '"') {
+                        result.LocalIncludes.Add(line.Substring(path_start, i-path_start-1));
+                        return ParseResult.Ok;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Simple parser... only looks for #include lines. Does not take #defines or comments into account.
         /// </summary>
@@ -31,25 +89,11 @@ namespace HeaderHero.Parser
             res.Lines = lines.Count();
             foreach (string line in lines)
             {
-                if (line.Contains("#include"))
+                if (line.Contains('#') && line.Contains("include"))
                 {
-                    int i = line.IndexOf('#');
-                    int lt = line.IndexOf('<', i);
-                    int qt = line.IndexOf('"', i);
-
-                    if (lt < 0 && qt < 0 || lt > 0 && qt > 0)
-                    {
+                    ParseResult r = ParseLine(line, res);
+                    if (r == ParseResult.Error)
                         errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
-                        continue;
-                    }
-
-                    if (qt<0) {
-                        int gt = line.IndexOf('>', lt+1);
-                        res.SystemIncludes.Add(line.Substring(lt+1,gt-lt-1));
-                    } else {
-                        int qt2 = line.IndexOf('"', qt+1);
-                        res.LocalIncludes.Add(line.Substring(qt+1,qt2-qt-1));
-                    }
                 }
             }
             return res;
