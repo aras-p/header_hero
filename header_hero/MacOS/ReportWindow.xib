@@ -74,14 +74,14 @@
 							<string key="NSFrameSize">{655, 604}</string>
 							<reference key="NSSuperview" ref="312036702"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="282753100"/>
+							<reference key="NSNextKeyView" ref="168095656"/>
 							<string key="NSReuseIdentifierKey">_NS:461</string>
 							<object class="NSMutableArray" key="NSTabViewItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
 								<object class="NSTabViewItem" id="932928037">
 									<string key="NSIdentifier">1</string>
 									<object class="NSView" key="NSView" id="168095656">
-										<nil key="NSNextResponder"/>
+										<reference key="NSNextResponder" ref="529141839"/>
 										<int key="NSvFlags">256</int>
 										<object class="NSMutableArray" key="NSSubviews">
 											<bool key="EncodedWithXMLCoder">YES</bool>
@@ -111,6 +111,7 @@
 												</object>
 												<string key="NSFrameSize">{635, 558}</string>
 												<reference key="NSSuperview" ref="168095656"/>
+												<reference key="NSWindow"/>
 												<reference key="NSNextKeyView"/>
 												<string key="NSReuseIdentifierKey">_NS:51</string>
 												<string key="FrameName"/>
@@ -138,6 +139,8 @@
 											</object>
 										</object>
 										<string key="NSFrame">{{10, 33}, {635, 558}}</string>
+										<reference key="NSSuperview" ref="529141839"/>
+										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="205170896"/>
 										<string key="NSReuseIdentifierKey">_NS:463</string>
 									</object>
@@ -184,9 +187,9 @@
 															<object class="NSTextView" id="571890543">
 																<reference key="NSNextResponder" ref="89071692"/>
 																<int key="NSvFlags">2322</int>
-																<string key="NSFrameSize">{633, 556}</string>
+																<string key="NSFrame">{{0, 423}, {633, 133}}</string>
 																<reference key="NSSuperview" ref="89071692"/>
-																<reference key="NSNextKeyView" ref="620135848"/>
+																<reference key="NSNextKeyView" ref="637793454"/>
 																<string key="NSReuseIdentifierKey">_NS:3760</string>
 																<object class="NSTextContainer" key="NSTextContainer" id="795736943">
 																	<object class="NSLayoutManager" key="NSLayoutManager">
@@ -335,7 +338,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 												</object>
 												<string key="NSFrameSize">{635, 558}</string>
 												<reference key="NSSuperview" ref="446035249"/>
-												<reference key="NSNextKeyView" ref="637793454"/>
+												<reference key="NSNextKeyView" ref="89071692"/>
 												<string key="NSReuseIdentifierKey">_NS:148</string>
 												<int key="NSsFlags">133138</int>
 												<reference key="NSVScroller" ref="620135848"/>
@@ -352,7 +355,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 								</object>
 								<object class="NSTabViewItem" id="970094763">
 									<object class="NSView" key="NSView" id="282753100">
-										<reference key="NSNextResponder" ref="529141839"/>
+										<nil key="NSNextResponder"/>
 										<int key="NSvFlags">256</int>
 										<object class="NSMutableArray" key="NSSubviews">
 											<bool key="EncodedWithXMLCoder">YES</bool>
@@ -369,33 +372,9 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 															<object class="NSTextView" id="379912189">
 																<reference key="NSNextResponder" ref="126801229"/>
 																<int key="NSvFlags">2322</int>
-																<object class="NSMutableSet" key="NSDragTypes">
-																	<bool key="EncodedWithXMLCoder">YES</bool>
-																	<object class="NSArray" key="set.sortedObjects">
-																		<bool key="EncodedWithXMLCoder">YES</bool>
-																		<string>Apple HTML pasteboard type</string>
-																		<string>Apple PDF pasteboard type</string>
-																		<string>Apple PICT pasteboard type</string>
-																		<string>Apple PNG pasteboard type</string>
-																		<string>Apple URL pasteboard type</string>
-																		<string>CorePasteboardFlavorType 0x6D6F6F76</string>
-																		<string>NSColor pasteboard type</string>
-																		<string>NSFilenamesPboardType</string>
-																		<string>NSStringPboardType</string>
-																		<string>NeXT Encapsulated PostScript v1.2 pasteboard type</string>
-																		<string>NeXT RTFD pasteboard type</string>
-																		<string>NeXT Rich Text Format v1.0 pasteboard type</string>
-																		<string>NeXT TIFF v4.0 pasteboard type</string>
-																		<string>NeXT font pasteboard type</string>
-																		<string>NeXT ruler pasteboard type</string>
-																		<string>WebURLsWithTitlesPboardType</string>
-																		<string>public.url</string>
-																	</object>
-																</object>
-																<string key="NSFrameSize">{633, 556}</string>
+																<string key="NSFrame">{{0, 423}, {633, 133}}</string>
 																<reference key="NSSuperview" ref="126801229"/>
-																<reference key="NSWindow"/>
-																<reference key="NSNextKeyView" ref="229971100"/>
+																<reference key="NSNextKeyView" ref="1061727700"/>
 																<string key="NSReuseIdentifierKey">_NS:3760</string>
 																<object class="NSTextContainer" key="NSTextContainer" id="373196236">
 																	<object class="NSLayoutManager" key="NSLayoutManager">
@@ -462,7 +441,6 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 														</object>
 														<string key="NSFrame">{{1, 1}, {633, 556}}</string>
 														<reference key="NSSuperview" ref="519638245"/>
-														<reference key="NSWindow"/>
 														<reference key="NSNextKeyView" ref="379912189"/>
 														<string key="NSReuseIdentifierKey">_NS:3758</string>
 														<reference key="NSDocView" ref="379912189"/>
@@ -497,7 +475,6 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 														<int key="NSvFlags">256</int>
 														<string key="NSFrame">{{619, 1}, {15, 556}}</string>
 														<reference key="NSSuperview" ref="519638245"/>
-														<reference key="NSWindow"/>
 														<reference key="NSNextKeyView" ref="529141839"/>
 														<string key="NSReuseIdentifierKey">_NS:3774</string>
 														<reference key="NSTarget" ref="519638245"/>
@@ -510,7 +487,6 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 														<int key="NSvFlags">-2147483392</int>
 														<string key="NSFrame">{{-100, -100}, {87, 18}}</string>
 														<reference key="NSSuperview" ref="519638245"/>
-														<reference key="NSWindow"/>
 														<reference key="NSNextKeyView" ref="126801229"/>
 														<string key="NSReuseIdentifierKey">_NS:3762</string>
 														<int key="NSsFlags">1</int>
@@ -522,8 +498,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 												</object>
 												<string key="NSFrameSize">{635, 558}</string>
 												<reference key="NSSuperview" ref="282753100"/>
-												<reference key="NSWindow"/>
-												<reference key="NSNextKeyView" ref="1061727700"/>
+												<reference key="NSNextKeyView" ref="126801229"/>
 												<string key="NSReuseIdentifierKey">_NS:148</string>
 												<int key="NSsFlags">133138</int>
 												<reference key="NSVScroller" ref="229971100"/>
@@ -532,8 +507,6 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 											</object>
 										</object>
 										<string key="NSFrame">{{10, 33}, {635, 558}}</string>
-										<reference key="NSSuperview" ref="529141839"/>
-										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="519638245"/>
 									</object>
 									<string key="NSLabel">Missing Files</string>
@@ -541,7 +514,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 									<reference key="NSTabView" ref="529141839"/>
 								</object>
 							</object>
-							<reference key="NSSelectedTabViewItem" ref="970094763"/>
+							<reference key="NSSelectedTabViewItem" ref="932928037"/>
 							<object class="NSFont" key="NSFont">
 								<string key="NSName">LucidaGrande</string>
 								<double key="NSSize">13</double>
@@ -552,7 +525,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<bool key="NSDrawsBackground">YES</bool>
 							<object class="NSMutableArray" key="NSSubviews">
 								<bool key="EncodedWithXMLCoder">YES</bool>
-								<reference ref="282753100"/>
+								<reference ref="168095656"/>
 							</object>
 						</object>
 					</object>
@@ -600,6 +573,14 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 						<reference key="destination" ref="379912189"/>
 					</object>
 					<int key="connectionID">27</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">tabView</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="529141839"/>
+					</object>
+					<int key="connectionID">28</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -857,7 +838,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">27</int>
+			<int key="maxID">28</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -880,12 +861,14 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string>errorsTextView</string>
 							<string>missingFilesTextView</string>
 							<string>reportView</string>
+							<string>tabView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSTextView</string>
 							<string>NSTextView</string>
 							<string>WebView</string>
+							<string>NSTabView</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -895,6 +878,7 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<string>errorsTextView</string>
 							<string>missingFilesTextView</string>
 							<string>reportView</string>
+							<string>tabView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -909,6 +893,10 @@ AAEAAQAAAT0AAwAAAAEAAgAAAVIAAwAAAAEAAQAAAVMAAwAAAAIAAQABAAAAAA</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">reportView</string>
 								<string key="candidateClassName">WebView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">tabView</string>
+								<string key="candidateClassName">NSTabView</string>
 							</object>
 						</object>
 					</object>

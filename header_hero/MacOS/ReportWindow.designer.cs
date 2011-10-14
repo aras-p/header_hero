@@ -17,6 +17,9 @@ namespace HeaderHero
 	partial class ReportWindowController
 	{
 		[Outlet]
+		MonoMac.AppKit.NSTabView tabView { get; set; }
+
+		[Outlet]
 		MonoMac.WebKit.WebView reportView { get; set; }
 
 		[Outlet]

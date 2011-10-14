@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using MonoMac.WebKit;
 
 namespace HeaderHero
 {
@@ -48,6 +49,8 @@ namespace HeaderHero
 		
 		public override void AwakeFromNib()
 		{
+			tabView.SelectAt(0);
+			
 			string errors = String.Join ("\n", _scanner.Errors);
 			errorsTextView.TextStorage.SetString(new NSAttributedString(errors));
 			
@@ -62,11 +65,54 @@ namespace HeaderHero
 				NSUrl url = NSUrl.FromFilename(file);
                 reportView.MainFrameUrl = url.ToString();
 			}
-				
-            // reportBrowser.Navigating += reportBrowser_Navigating;
+			
+			reportView.DecidePolicyForNavigation += (sender, e) => {
+				NSUrl url = e.Request.Url;
+				if (url.Host == "inspect")
+	            {
+	                string inspect = url.Query;
+	                Inspect(Uri.UnescapeDataString(inspect));
+	                tabView.SelectAt(1);
+	            }
+			};
 		}
 		
 		#endregion
+		
+		private void Inspect(string file)
+        {
+            /*
+            {
+                fileListView.Items.Clear();
+                ListViewItem item = new ListViewItem(Path.GetFileName(file));
+                item.Tag = file;
+                fileListView.Items.Add(item);
+            }
+
+            {
+                includesListView.Items.Clear();
+                foreach (string s in _project.Files[file].AbsoluteIncludes.OrderByDescending(f => _analytics.Items[f].AllIncludes.Count))
+                {
+                    string text = string.Format("{0} ({1})", Path.GetFileName(s), _analytics.Items[s].AllIncludes.Count);
+                    ListViewItem item = new ListViewItem(text);
+                    item.Tag = s;
+                    includesListView.Items.Add(item);
+                }
+            }
+
+            {
+                includedByListView.Items.Clear();
+                IEnumerable<string> included = _project.Files.Where(kvp => kvp.Value.AbsoluteIncludes.Contains(file)).Select(kvp => kvp.Key);
+                foreach (string s in included.OrderByDescending(s => _analytics.Items[s].AllIncludedBy.Count))
+                {
+                    string text = string.Format("{0} ({1})", Path.GetFileName(s), _analytics.Items[s].AllIncludedBy.Count);
+                    ListViewItem item = new ListViewItem(text);
+                    item.Tag = s;
+                    includedByListView.Items.Add(item);
+                }
+            }
+            */
+        }
 		
 		//strongly typed window accessor
 		public new ReportWindow Window {
