@@ -188,7 +188,7 @@ namespace HeaderHero.Serialization
             return h;
         }
 
-        public void LoadObject(object o, dynamic h)
+        public void LoadObject(object o, Dictionary<string,object> h)
         {
             if (o is IJsonSerializerLoading)
                 (o as IJsonSerializerLoading).Loading(h as Dictionary<string, object>);

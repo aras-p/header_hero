@@ -30,7 +30,8 @@ namespace HeaderHero
         {
             _project = project;
             _scanner = scanner;
-
+            _analytics = Parser.Analytics.Analyze(_project);
+            
             errorsListView.Items.Clear();
             foreach (string s in scanner.Errors)
                 errorsListView.Items.Add(s);
@@ -38,9 +39,12 @@ namespace HeaderHero
             foreach (string s in scanner.NotFound.OrderBy(s => s))
                 missingFilesListView.Items.Add(s);
 
-            Analyze();
-            GenerateCss();
-            GenerateReport();
+            string file = Parser.Report.Generate(_project, _analytics);
+            if (reportBrowser.Url != null)
+                reportBrowser.Refresh();
+            else
+                reportBrowser.Navigate(file);
+            reportBrowser.Navigating += reportBrowser_Navigating;
         }
 
         void includedByListView_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -51,83 +55,6 @@ namespace HeaderHero
                 string file = lv.SelectedItems[0].Tag as string;
                 Inspect(file);
             }
-        }
-
-        private void Analyze()
-        {
-            _analytics = Parser.Analytics.Analyze(_project);
-        }
-
-        public void GenerateCss()
-        {
-            string file = Path.Combine(Path.GetTempPath(), "header_hero_report.css");
-            File.WriteAllBytes(file, Encoding.UTF8.GetBytes(Properties.Resources.Css));
-        }
-
-        public void AppendSummary(StringBuilder sb, IDictionary<string, string> count)
-        {
-            sb.AppendFormat("<table class=\"summary\">\n");
-            foreach (var kvp in count)
-                sb.AppendFormat("  <tr><th>{0}:</th> <td>{1}</td></tr>\n", kvp.Key, kvp.Value);
-            sb.AppendFormat("</table>\n");
-        }
-
-        public void AppendFileList(StringBuilder sb, string header, IEnumerable< KeyValuePair<string, int> > count)
-        {
-            sb.AppendFormat("<h2>{0}</h2>\n\n", header);
-
-            sb.AppendFormat("<table class=\"list\">\n");
-            foreach (var kvp in count)
-                sb.AppendFormat("  <tr><th>{1:### ### ###}</th> <td><a href=\"http://inspect?{0}\">{2}</a></td></tr>\n", kvp.Key, kvp.Value, Path.GetFileName(kvp.Key));
-            sb.AppendFormat("</table>\n");
-        }
-
-        public void GenerateReport()
-        {
-            string html = Properties.Resources.Html;
-
-            StringBuilder sb = new StringBuilder();
-
-            // Summary
-            {
-                int total_lines = _project.Files.Sum(kvp => kvp.Value.Lines);
-                int total_parsed = _analytics.Items.Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
-                float factor = (float)total_parsed / (float)total_lines;
-                Dictionary<string, string> table = new Dictionary<string, string> {
-                    {"Files", string.Format("{0:### ### ###}", _project.Files.Count)},
-                    {"Total Lines", string.Format("{0:### ### ###}", total_lines)},
-                    {"Total Parsed", string.Format("{0:### ### ###}", total_parsed)},
-                    {"Blowup Factor", string.Format("{0:0.00}", factor) }
-                };
-                AppendSummary(sb, table);
-            }
-
-            {
-                var most = _analytics.Items
-                    .ToDictionary(kvp => kvp.Key, kvp => _project.Files[kvp.Key].Lines * kvp.Value.AllIncludedBy.Count)
-                    .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "Biggest Contributors", most);
-            }
-
-            {
-                var hubs = _analytics.Items
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.AllIncludedBy.Count)
-                    .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "Header Hubs", hubs);
-            }
-
-            html = html.Replace("%CONTENT%", sb.ToString());
-            
-            string file = Path.Combine(Path.GetTempPath(), "header_hero_report.html");
-            File.WriteAllBytes(file, Encoding.UTF8.GetBytes(html));
-
-            if (reportBrowser.Url != null)
-                reportBrowser.Refresh();
-            else
-                reportBrowser.Navigate(file);
-            reportBrowser.Navigating += reportBrowser_Navigating;
         }
 
         private string _inspecting;

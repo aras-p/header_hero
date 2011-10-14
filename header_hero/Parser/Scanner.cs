@@ -12,10 +12,10 @@ namespace HeaderHero.Parser
         HashSet<string> _queued;
         List<FileInfo> _scan_queue;
         Dictionary<string, string> _system_includes;
+        public bool CaseSensitive { get; set; }
 
         public List<string> Errors;
         public HashSet<string> NotFound;
-
 
         public Scanner(Data.Project p)
         {
@@ -26,49 +26,91 @@ namespace HeaderHero.Parser
 
             Errors = new List<string>();
             NotFound = new HashSet<string>();
+
+            CaseSensitive = IsCaseSensitive();
+        }
+
+        private bool IsCaseSensitive()
+        {
+            foreach (string dir in _project.ScanDirectories)
+            {
+                DirectoryInfo dl = new DirectoryInfo(dir.ToLowerInvariant());
+                DirectoryInfo du = new DirectoryInfo(dir.ToUpperInvariant());
+                if (dl.Exists != du.Exists || dl.CreationTime != du.CreationTime || dl.LastAccessTime != du.LastAccessTime)
+                    return true;
+            }
+            return false;
         }
 
         public void Rescan(ProgressFeedback feedback)
         {
+            feedback.Title = "Scanning directories...";
+
+            foreach (Data.SourceFile sf in _project.Files.Values)
+                sf.Touched = false;
+
             foreach (string dir in _project.ScanDirectories)
             {
                 feedback.Message = dir;
-                ScanDirectory(new DirectoryInfo(dir));
+                ScanDirectory(new DirectoryInfo(dir), feedback);
             }
 
-            int i = 0;
-            feedback.Count = _scan_queue.Count;
-            feedback.Item = 0;
+            feedback.Title = "Scanning files...";
 
+            int dequeued = 0;
+            
             while (_scan_queue.Count > 0)
             {
+                dequeued += _scan_queue.Count;
                 FileInfo[] to_scan = _scan_queue.ToArray();
                 _scan_queue.Clear();
                 foreach (FileInfo fi in to_scan)
                 {
-                    feedback.Count = to_scan.Length + _scan_queue.Count;
-                    feedback.Item = i;
-                    feedback.Title = fi.Name;
+                    feedback.Count = dequeued + _scan_queue.Count;
+                    feedback.Item++;
+                    feedback.Message = fi.Name;
                     ScanFile(fi);
                 }
             }
+
+            foreach (var it in _project.Files.Where(kvp => !kvp.Value.Touched).ToList())
+                _project.Files.Remove(it.Key);
         }
         
-        void ScanDirectory(DirectoryInfo di)
+        void ScanDirectory(DirectoryInfo di, ProgressFeedback feedback)
         {
-            foreach (FileInfo file in di.EnumerateFiles())
+            FileInfo[] files;
+            DirectoryInfo[] subdirs;
+
+            feedback.Message = di.FullName;
+
+            try
             {
-                if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc")
-                    ScanFile(file);
+                files = di.GetFiles();
+                subdirs = di.GetDirectories();
             }
-            foreach (DirectoryInfo subdir in di.EnumerateDirectories())
+            catch (Exception e)
+            {
+                Errors.Add(string.Format("Cannot descend into {0}: {1}", di.FullName, e.Message));
+                return;
+            }
+
+            foreach (FileInfo file in files)
+            {
+                if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc" || file.Extension == @".cxx")
+                    Enqueue(file, CanonicalPath(file));
+            }
+            foreach (DirectoryInfo subdir in subdirs)
                 if (!subdir.Name.StartsWith("."))
-                    ScanDirectory(subdir);
+                    ScanDirectory(subdir, feedback);
         }
 
         string CanonicalPath(FileInfo fi)
         {
-            return fi.FullName;
+            if (CaseSensitive)
+                return fi.FullName;
+            else
+                return fi.FullName.ToLowerInvariant();
         }
 
         void Enqueue(FileInfo inc, string abs)
@@ -96,49 +138,65 @@ namespace HeaderHero.Parser
                 _project.Files[path] = sf;
             }
 
+            sf.Touched = true;
             sf.AbsoluteIncludes.Clear();
 
             string local_dir = Path.GetDirectoryName(path);
             foreach (string s in sf.LocalIncludes) {
-                FileInfo inc = new FileInfo(Path.Combine(local_dir, s));
-                string abs = CanonicalPath(inc);
-                if (!inc.Exists)
+                try
                 {
-                    Errors.Add("Missing file: " + abs + " included by: " + fi.FullName);
-                    continue;
+                    FileInfo inc = new FileInfo(Path.Combine(local_dir, s));
+                    string abs = CanonicalPath(inc);
+                    if (!inc.Exists)
+                    {
+                        if (!sf.SystemIncludes.Contains(s))
+                            sf.SystemIncludes.Add(s);
+                        continue;
+                    }
+                    sf.AbsoluteIncludes.Add(abs);
+                    Enqueue(inc, abs);
                 }
-                sf.AbsoluteIncludes.Add(abs);
-                Enqueue(inc, abs);
+                catch (Exception e)
+                {
+                    Errors.Add(String.Format("Exception: \"{0}\" for #include \"{1}\"", e.Message, s));
+                }
             }
 
             foreach (string s in sf.SystemIncludes)
             {
-                if (_system_includes.ContainsKey(s))
+                try
                 {
-                    string abs = _system_includes[s];
-                    sf.AbsoluteIncludes.Add(abs);
-                }
-                else
-                {
-                    FileInfo found = null;
-
-                    foreach (string dir in _project.IncludeDirectories)
+                    if (_system_includes.ContainsKey(s))
                     {
-                        found = new FileInfo(Path.Combine(dir, s));
-                        if (found.Exists)
-                            break;
-                        found = null;
-                    }
-
-                    if (found != null)
-                    {
-                        string abs = CanonicalPath(found);
+                        string abs = _system_includes[s];
                         sf.AbsoluteIncludes.Add(abs);
-                        _system_includes[s] = abs;
-                        Enqueue(found, abs);
                     }
                     else
-                        NotFound.Add(s);
+                    {
+                        FileInfo found = null;
+
+                        foreach (string dir in _project.IncludeDirectories)
+                        {
+                            found = new FileInfo(Path.Combine(dir, s));
+                            if (found.Exists)
+                                break;
+                            found = null;
+                        }
+
+                        if (found != null)
+                        {
+                            string abs = CanonicalPath(found);
+                            sf.AbsoluteIncludes.Add(abs);
+                            _system_includes[s] = abs;
+                            Enqueue(found, abs);
+                        }
+                        else
+                            NotFound.Add(s);
+                    }
+                }
+                catch (Exception e)
+                {
+                     Errors.Add(String.Format("Exception: \"{0}\" for #include <{1}>", e.Message, s));
                 }
                 
             }
