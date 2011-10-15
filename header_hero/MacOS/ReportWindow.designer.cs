@@ -20,6 +20,9 @@ namespace HeaderHero
 		MonoMac.AppKit.NSTabView tabView { get; set; }
 
 		[Outlet]
+		MonoMac.AppKit.NSTableView includesTableView { get; set; }
+
+		[Outlet]
 		MonoMac.WebKit.WebView reportView { get; set; }
 
 		[Outlet]
