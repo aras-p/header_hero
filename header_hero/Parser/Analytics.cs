@@ -10,6 +10,7 @@ namespace HeaderHero.Parser
         public HashSet<string> AllIncludes;
         public int TotalIncludeLines;
         public HashSet<string> AllIncludedBy;
+		public HashSet<string> TranslationUnitsIncludedBy;
         public bool Analyzed;
 
         public ItemAnalytics()
@@ -17,6 +18,7 @@ namespace HeaderHero.Parser
             AllIncludes = new HashSet<string>();
             TotalIncludeLines = 0;
             AllIncludedBy = new HashSet<string>();
+			TranslationUnitsIncludedBy = new HashSet<string>();
             Analyzed = false;
         }
     }
@@ -47,14 +49,22 @@ namespace HeaderHero.Parser
             {
                 if (include == path)
                     continue;
-
+				
+				bool is_tu = Data.SourceFile.IsTranslationUnitPath(path);
+				
                 ItemAnalytics ai = Analyze(include, project);
                 a.AllIncludes.Add(include);
                 ai.AllIncludedBy.Add(path);
+				if (is_tu)
+					ai.TranslationUnitsIncludedBy.Add (path);
+				
 
                 a.AllIncludes.UnionWith(ai.AllIncludes);
-                foreach (string inc in ai.AllIncludes)
+                foreach (string inc in ai.AllIncludes) {
                     Items[inc].AllIncludedBy.Add(path);
+					if (is_tu)
+						Items[inc].TranslationUnitsIncludedBy.Add (path);
+				}
             }
 
             a.TotalIncludeLines = a.AllIncludes.Sum(f => project.Files[f].Lines);

@@ -21,5 +21,15 @@ namespace HeaderHero.Data
             Lines = 0;
             Touched = false;
         }
+		
+		static public bool IsTranslationUnitExtension(string ext)
+		{
+			return (ext == @".cpp" || ext == @".c" || ext == @".cc" || ext == @".cxx");
+		}
+		
+		static public bool IsTranslationUnitPath(string path)
+		{
+			return IsTranslationUnitExtension( System.IO.Path.GetExtension(path) );
+		}
     }
 }

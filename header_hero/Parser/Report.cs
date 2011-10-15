@@ -58,7 +58,9 @@ namespace HeaderHero.Parser
             // Summary
             {
                 int total_lines = _project.Files.Sum(kvp => kvp.Value.Lines);
-                int total_parsed = _analytics.Items.Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
+                int total_parsed = _analytics.Items
+					.Where (kvp => Data.SourceFile.IsTranslationUnitPath(kvp.Key))
+					.Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
                 float factor = (float)total_parsed / (float)total_lines;
                 Dictionary<string, string> table = new Dictionary<string, string> {
                     {"Files", string.Format("{0:### ### ###}", _project.Files.Count)},
@@ -71,7 +73,8 @@ namespace HeaderHero.Parser
 
             {
                 var most = _analytics.Items
-                    .ToDictionary(kvp => kvp.Key, kvp => _project.Files[kvp.Key].Lines * kvp.Value.AllIncludedBy.Count)
+                    .ToDictionary(kvp => kvp.Key, kvp => _project.Files[kvp.Key].Lines *
+						kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "Biggest Contributors", most);
@@ -79,7 +82,7 @@ namespace HeaderHero.Parser
 
             {
                 var hubs = _analytics.Items
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.AllIncludedBy.Count)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "Header Hubs", hubs);
