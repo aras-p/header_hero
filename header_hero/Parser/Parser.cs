@@ -95,8 +95,6 @@ namespace HeaderHero.Parser
                     if (r == ParseResult.Error)
                         errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
                 }
-                    else
-                        errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
             }
             return res;
         }
