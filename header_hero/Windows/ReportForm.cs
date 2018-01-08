@@ -23,7 +23,9 @@ namespace HeaderHero
             includedByListView.MouseDoubleClick += new MouseEventHandler(includedByListView_MouseDoubleClick);
             includesListView.MouseDoubleClick += new MouseEventHandler(includedByListView_MouseDoubleClick);
 
+            Cursor.Current = Cursors.WaitCursor;
             Setup(project, scanner);
+            Cursor.Current = Cursors.Default;
         }
 
         private void Setup(Data.Project project, Parser.Scanner scanner)
