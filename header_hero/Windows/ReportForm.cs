@@ -38,8 +38,12 @@ namespace HeaderHero
             foreach (string s in scanner.Errors)
                 errorsListView.Items.Add(s);
             missingFilesListView.Items.Clear();
-            foreach (string s in scanner.NotFound.OrderBy(s => s))
-                missingFilesListView.Items.Add(s);
+            foreach (var s in scanner.NotFound.OrderBy(s => s))
+            {
+                var li = new ListViewItem(s);
+                li.ToolTipText = scanner.NotFoundOrigins[s];
+                missingFilesListView.Items.Add(li);
+            }
 
             string file = Parser.Report.Generate(_project, _analytics);
             if (reportBrowser.Url != null)

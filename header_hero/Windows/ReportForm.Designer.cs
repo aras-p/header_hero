@@ -229,6 +229,7 @@
             this.missingFilesListView.Location = new System.Drawing.Point(4, 5);
             this.missingFilesListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingFilesListView.Name = "missingFilesListView";
+            this.missingFilesListView.ShowItemToolTips = true;
             this.missingFilesListView.Size = new System.Drawing.Size(946, 979);
             this.missingFilesListView.TabIndex = 1;
             this.missingFilesListView.UseCompatibleStateImageBehavior = false;

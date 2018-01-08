@@ -16,6 +16,7 @@ namespace HeaderHero.Parser
 
         public List<string> Errors;
         public HashSet<string> NotFound;
+        public Dictionary<string, string> NotFoundOrigins;
 
         public Scanner(Data.Project p)
         {
@@ -26,6 +27,7 @@ namespace HeaderHero.Parser
 
             Errors = new List<string>();
             NotFound = new HashSet<string>();
+            NotFoundOrigins = new Dictionary<string, string>();
 
             CaseSensitive = IsCaseSensitive();
         }
@@ -191,7 +193,12 @@ namespace HeaderHero.Parser
                             Enqueue(found, abs);
                         }
                         else
-                            NotFound.Add(s);
+                        {
+                            if (NotFound.Add(s))
+                            {
+                                NotFoundOrigins.Add(s, path);
+                            }
+                        }
                     }
                 }
                 catch (Exception e)
