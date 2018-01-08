@@ -71,7 +71,8 @@ namespace HeaderHero
 
             {
                 fileListView.Items.Clear();
-                ListViewItem item = new ListViewItem(Path.GetFileName(file));
+                string text = string.Format("{0} ({1})", Path.GetFileName(file), _analytics.Items[file].TotalIncludeLines);
+                ListViewItem item = new ListViewItem(text);
                 item.Tag = file;
                 fileListView.Items.Add(item);
             }
@@ -80,8 +81,7 @@ namespace HeaderHero
                 includesListView.Items.Clear();
                 foreach (string s in _project.Files[file].AbsoluteIncludes.OrderByDescending(f => _analytics.Items[f].AllIncludes.Count))
                 {
-                    string text = string.Format("{0} ({1})", Path.GetFileName(s), _analytics.Items[s].AllIncludes.Count);
-                    ListViewItem item = new ListViewItem(text);
+                    ListViewItem item = new ListViewItem(new[] { Path.GetFileName(s), _analytics.Items[s].AllIncludes.Count.ToString(), _analytics.Items[s].TotalIncludeLines.ToString()});
                     item.Tag = s;
                     includesListView.Items.Add(item);
                 }
@@ -92,8 +92,7 @@ namespace HeaderHero
                 IEnumerable<string> included = _project.Files.Where(kvp => kvp.Value.AbsoluteIncludes.Contains(file)).Select(kvp => kvp.Key);
                 foreach (string s in included.OrderByDescending(s => _analytics.Items[s].AllIncludedBy.Count))
                 {
-                    string text = string.Format("{0} ({1})", Path.GetFileName(s), _analytics.Items[s].AllIncludedBy.Count);
-                    ListViewItem item = new ListViewItem(text);
+                    ListViewItem item = new ListViewItem(new[] { Path.GetFileName(s), _analytics.Items[s].AllIncludedBy.Count.ToString(), _analytics.Items[s].TotalIncludeLines.ToString() });
                     item.Tag = s;
                     includedByListView.Items.Add(item);
                 }

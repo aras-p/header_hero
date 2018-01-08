@@ -39,6 +39,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.includedByListView = new System.Windows.Forms.ListView();
+            this.ByFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ByCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ByLines = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.errorsTab = new System.Windows.Forms.TabPage();
             this.errorsListView = new System.Windows.Forms.ListView();
             this.missingTab = new System.Windows.Forms.TabPage();
@@ -46,6 +49,9 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.scanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rescanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.IncludesFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.IncludesCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.IncludesLines = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPages.SuspendLayout();
             this.reportTab.SuspendLayout();
             this.includeTab.SuspendLayout();
@@ -66,7 +72,7 @@
             this.tabPages.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPages.Name = "tabPages";
             this.tabPages.SelectedIndex = 0;
-            this.tabPages.Size = new System.Drawing.Size(962, 1022);
+            this.tabPages.Size = new System.Drawing.Size(1388, 1022);
             this.tabPages.TabIndex = 0;
             // 
             // reportTab
@@ -76,7 +82,7 @@
             this.reportTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.reportTab.Name = "reportTab";
             this.reportTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.reportTab.Size = new System.Drawing.Size(954, 989);
+            this.reportTab.Size = new System.Drawing.Size(1012, 989);
             this.reportTab.TabIndex = 0;
             this.reportTab.Text = "Report";
             this.reportTab.UseVisualStyleBackColor = true;
@@ -88,7 +94,7 @@
             this.reportBrowser.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.reportBrowser.MinimumSize = new System.Drawing.Size(30, 31);
             this.reportBrowser.Name = "reportBrowser";
-            this.reportBrowser.Size = new System.Drawing.Size(946, 979);
+            this.reportBrowser.Size = new System.Drawing.Size(1004, 979);
             this.reportBrowser.TabIndex = 0;
             // 
             // includeTab
@@ -98,7 +104,7 @@
             this.includeTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includeTab.Name = "includeTab";
             this.includeTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.includeTab.Size = new System.Drawing.Size(954, 989);
+            this.includeTab.Size = new System.Drawing.Size(1380, 989);
             this.includeTab.TabIndex = 3;
             this.includeTab.Text = "Includes";
             this.includeTab.UseVisualStyleBackColor = true;
@@ -122,27 +128,31 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(946, 979);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1372, 979);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // includesListView
             // 
+            this.includesListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.IncludesFile,
+            this.IncludesCount,
+            this.IncludesLines});
             this.includesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.includesListView.Location = new System.Drawing.Point(634, 36);
+            this.includesListView.Location = new System.Drawing.Point(918, 36);
             this.includesListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includesListView.Name = "includesListView";
-            this.includesListView.Size = new System.Drawing.Size(308, 938);
+            this.includesListView.Size = new System.Drawing.Size(450, 938);
             this.includesListView.TabIndex = 5;
             this.includesListView.UseCompatibleStateImageBehavior = false;
-            this.includesListView.View = System.Windows.Forms.View.List;
+            this.includesListView.View = System.Windows.Forms.View.Details;
             // 
             // fileListView
             // 
             this.fileListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fileListView.Location = new System.Drawing.Point(319, 36);
+            this.fileListView.Location = new System.Drawing.Point(461, 36);
             this.fileListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(307, 938);
+            this.fileListView.Size = new System.Drawing.Size(449, 938);
             this.fileListView.TabIndex = 4;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.List;
@@ -150,7 +160,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(634, 0);
+            this.label3.Location = new System.Drawing.Point(918, 0);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(73, 20);
@@ -160,7 +170,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(319, 0);
+            this.label2.Location = new System.Drawing.Point(461, 0);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 20);
@@ -179,14 +189,33 @@
             // 
             // includedByListView
             // 
+            this.includedByListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ByFile,
+            this.ByCount,
+            this.ByLines});
             this.includedByListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.includedByListView.Location = new System.Drawing.Point(4, 36);
             this.includedByListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includedByListView.Name = "includedByListView";
-            this.includedByListView.Size = new System.Drawing.Size(307, 938);
+            this.includedByListView.Size = new System.Drawing.Size(449, 938);
             this.includedByListView.TabIndex = 3;
             this.includedByListView.UseCompatibleStateImageBehavior = false;
             this.includedByListView.View = System.Windows.Forms.View.Details;
+            // 
+            // ByFile
+            // 
+            this.ByFile.Text = "File";
+            this.ByFile.Width = 160;
+            // 
+            // ByCount
+            // 
+            this.ByCount.Text = "Count";
+            this.ByCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // ByLines
+            // 
+            this.ByLines.Text = "Lines";
+            this.ByLines.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // errorsTab
             // 
@@ -195,7 +224,7 @@
             this.errorsTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.errorsTab.Name = "errorsTab";
             this.errorsTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.errorsTab.Size = new System.Drawing.Size(954, 989);
+            this.errorsTab.Size = new System.Drawing.Size(1012, 989);
             this.errorsTab.TabIndex = 1;
             this.errorsTab.Text = "Errors";
             this.errorsTab.UseVisualStyleBackColor = true;
@@ -206,7 +235,7 @@
             this.errorsListView.Location = new System.Drawing.Point(4, 5);
             this.errorsListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.errorsListView.Name = "errorsListView";
-            this.errorsListView.Size = new System.Drawing.Size(946, 979);
+            this.errorsListView.Size = new System.Drawing.Size(1004, 979);
             this.errorsListView.TabIndex = 0;
             this.errorsListView.UseCompatibleStateImageBehavior = false;
             this.errorsListView.View = System.Windows.Forms.View.List;
@@ -218,7 +247,7 @@
             this.missingTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingTab.Name = "missingTab";
             this.missingTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.missingTab.Size = new System.Drawing.Size(954, 989);
+            this.missingTab.Size = new System.Drawing.Size(1012, 989);
             this.missingTab.TabIndex = 2;
             this.missingTab.Text = "Missing Files";
             this.missingTab.UseVisualStyleBackColor = true;
@@ -230,7 +259,7 @@
             this.missingFilesListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingFilesListView.Name = "missingFilesListView";
             this.missingFilesListView.ShowItemToolTips = true;
-            this.missingFilesListView.Size = new System.Drawing.Size(946, 979);
+            this.missingFilesListView.Size = new System.Drawing.Size(1004, 979);
             this.missingFilesListView.TabIndex = 1;
             this.missingFilesListView.UseCompatibleStateImageBehavior = false;
             this.missingFilesListView.View = System.Windows.Forms.View.List;
@@ -243,7 +272,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
-            this.menuStrip1.Size = new System.Drawing.Size(962, 35);
+            this.menuStrip1.Size = new System.Drawing.Size(1388, 35);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -263,11 +292,26 @@
             this.rescanToolStripMenuItem.Text = "Rescan";
             this.rescanToolStripMenuItem.Click += new System.EventHandler(this.rescanToolStripMenuItem_Click);
             // 
+            // IncludesFile
+            // 
+            this.IncludesFile.Text = "File";
+            this.IncludesFile.Width = 160;
+            // 
+            // IncludesCount
+            // 
+            this.IncludesCount.Text = "Count";
+            this.IncludesCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // IncludesLines
+            // 
+            this.IncludesLines.Text = "Lines";
+            this.IncludesLines.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // ReportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(962, 1057);
+            this.ClientSize = new System.Drawing.Size(1388, 1057);
             this.Controls.Add(this.tabPages);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -308,5 +352,11 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem scanToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rescanToolStripMenuItem;
+        private System.Windows.Forms.ColumnHeader ByFile;
+        private System.Windows.Forms.ColumnHeader ByCount;
+        private System.Windows.Forms.ColumnHeader ByLines;
+        private System.Windows.Forms.ColumnHeader IncludesFile;
+        private System.Windows.Forms.ColumnHeader IncludesCount;
+        private System.Windows.Forms.ColumnHeader IncludesLines;
     }
 }

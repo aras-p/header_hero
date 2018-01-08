@@ -39,8 +39,9 @@ namespace HeaderHero.Parser
             sb.AppendFormat("</table>\n");
         }
 
-        void AppendFileList(StringBuilder sb, string header, IEnumerable<KeyValuePair<string, int>> count)
+        void AppendFileList(StringBuilder sb, string id, string header, IEnumerable<KeyValuePair<string, int>> count)
         {
+            sb.AppendFormat("<a name=\"{0}\" />", id);
             sb.AppendFormat("<h2>{0}</h2>\n\n", header);
 
             sb.AppendFormat("<table class=\"list\">\n");
@@ -66,7 +67,7 @@ namespace HeaderHero.Parser
                     {"Files", string.Format("{0:### ### ###}", _project.Files.Count)},
                     {"Total Lines", string.Format("{0:### ### ###}", total_lines)},
                     {"Total Parsed", string.Format("{0:### ### ###}", total_parsed)},
-                    {"Blowup Factor", string.Format("{0:0.00}", factor) }
+                    {"Blowup Factor", string.Format("{0:0.00} (<a href=\"#largest\">largest</a>, <a href=\"#hubs\">hubs</a>)", factor) }
                 };
                 AppendSummary(sb, table);
             }
@@ -77,7 +78,7 @@ namespace HeaderHero.Parser
 						kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "Biggest Contributors", most);
+                AppendFileList(sb, "largest", "Biggest Contributors", most);
             }
 
             {
@@ -85,7 +86,7 @@ namespace HeaderHero.Parser
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "Header Hubs", hubs);
+                AppendFileList(sb, "hubs", "Header Hubs", hubs);
             }
 
             html = html.Replace("%CONTENT%", sb.ToString());
