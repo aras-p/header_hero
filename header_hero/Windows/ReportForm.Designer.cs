@@ -62,19 +62,21 @@
             this.tabPages.Controls.Add(this.errorsTab);
             this.tabPages.Controls.Add(this.missingTab);
             this.tabPages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabPages.Location = new System.Drawing.Point(0, 24);
+            this.tabPages.Location = new System.Drawing.Point(0, 35);
+            this.tabPages.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPages.Name = "tabPages";
             this.tabPages.SelectedIndex = 0;
-            this.tabPages.Size = new System.Drawing.Size(641, 663);
+            this.tabPages.Size = new System.Drawing.Size(962, 1022);
             this.tabPages.TabIndex = 0;
             // 
             // reportTab
             // 
             this.reportTab.Controls.Add(this.reportBrowser);
-            this.reportTab.Location = new System.Drawing.Point(4, 22);
+            this.reportTab.Location = new System.Drawing.Point(4, 29);
+            this.reportTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.reportTab.Name = "reportTab";
-            this.reportTab.Padding = new System.Windows.Forms.Padding(3);
-            this.reportTab.Size = new System.Drawing.Size(633, 637);
+            this.reportTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.reportTab.Size = new System.Drawing.Size(954, 989);
             this.reportTab.TabIndex = 0;
             this.reportTab.Text = "Report";
             this.reportTab.UseVisualStyleBackColor = true;
@@ -82,19 +84,21 @@
             // reportBrowser
             // 
             this.reportBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.reportBrowser.Location = new System.Drawing.Point(3, 3);
-            this.reportBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.reportBrowser.Location = new System.Drawing.Point(4, 5);
+            this.reportBrowser.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.reportBrowser.MinimumSize = new System.Drawing.Size(30, 31);
             this.reportBrowser.Name = "reportBrowser";
-            this.reportBrowser.Size = new System.Drawing.Size(627, 631);
+            this.reportBrowser.Size = new System.Drawing.Size(946, 979);
             this.reportBrowser.TabIndex = 0;
             // 
             // includeTab
             // 
             this.includeTab.Controls.Add(this.tableLayoutPanel1);
-            this.includeTab.Location = new System.Drawing.Point(4, 22);
+            this.includeTab.Location = new System.Drawing.Point(4, 29);
+            this.includeTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includeTab.Name = "includeTab";
-            this.includeTab.Padding = new System.Windows.Forms.Padding(3);
-            this.includeTab.Size = new System.Drawing.Size(633, 661);
+            this.includeTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.includeTab.Size = new System.Drawing.Size(954, 989);
             this.includeTab.TabIndex = 3;
             this.includeTab.Text = "Includes";
             this.includeTab.UseVisualStyleBackColor = true;
@@ -112,20 +116,22 @@
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.includedByListView, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 5);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(627, 655);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(946, 979);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // includesListView
             // 
             this.includesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.includesListView.Location = new System.Drawing.Point(421, 23);
+            this.includesListView.Location = new System.Drawing.Point(634, 36);
+            this.includesListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includesListView.Name = "includesListView";
-            this.includesListView.Size = new System.Drawing.Size(203, 629);
+            this.includesListView.Size = new System.Drawing.Size(308, 938);
             this.includesListView.TabIndex = 5;
             this.includesListView.UseCompatibleStateImageBehavior = false;
             this.includesListView.View = System.Windows.Forms.View.List;
@@ -133,9 +139,10 @@
             // fileListView
             // 
             this.fileListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fileListView.Location = new System.Drawing.Point(212, 23);
+            this.fileListView.Location = new System.Drawing.Point(319, 36);
+            this.fileListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(203, 629);
+            this.fileListView.Size = new System.Drawing.Size(307, 938);
             this.fileListView.TabIndex = 4;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.List;
@@ -143,47 +150,52 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(421, 0);
+            this.label3.Location = new System.Drawing.Point(634, 0);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(50, 13);
+            this.label3.Size = new System.Drawing.Size(73, 20);
             this.label3.TabIndex = 2;
             this.label3.Text = "Includes:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(212, 0);
+            this.label2.Location = new System.Drawing.Point(319, 0);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(26, 13);
+            this.label2.Size = new System.Drawing.Size(38, 20);
             this.label2.TabIndex = 1;
             this.label2.Text = "File:";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Location = new System.Drawing.Point(4, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 13);
+            this.label1.Size = new System.Drawing.Size(94, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Included by:";
             // 
             // includedByListView
             // 
             this.includedByListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.includedByListView.Location = new System.Drawing.Point(3, 23);
+            this.includedByListView.Location = new System.Drawing.Point(4, 36);
+            this.includedByListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includedByListView.Name = "includedByListView";
-            this.includedByListView.Size = new System.Drawing.Size(203, 629);
+            this.includedByListView.Size = new System.Drawing.Size(307, 938);
             this.includedByListView.TabIndex = 3;
             this.includedByListView.UseCompatibleStateImageBehavior = false;
-            this.includedByListView.View = System.Windows.Forms.View.List;
+            this.includedByListView.View = System.Windows.Forms.View.Details;
             // 
             // errorsTab
             // 
             this.errorsTab.Controls.Add(this.errorsListView);
-            this.errorsTab.Location = new System.Drawing.Point(4, 22);
+            this.errorsTab.Location = new System.Drawing.Point(4, 29);
+            this.errorsTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.errorsTab.Name = "errorsTab";
-            this.errorsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.errorsTab.Size = new System.Drawing.Size(633, 661);
+            this.errorsTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.errorsTab.Size = new System.Drawing.Size(954, 989);
             this.errorsTab.TabIndex = 1;
             this.errorsTab.Text = "Errors";
             this.errorsTab.UseVisualStyleBackColor = true;
@@ -191,9 +203,10 @@
             // errorsListView
             // 
             this.errorsListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.errorsListView.Location = new System.Drawing.Point(3, 3);
+            this.errorsListView.Location = new System.Drawing.Point(4, 5);
+            this.errorsListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.errorsListView.Name = "errorsListView";
-            this.errorsListView.Size = new System.Drawing.Size(627, 655);
+            this.errorsListView.Size = new System.Drawing.Size(946, 979);
             this.errorsListView.TabIndex = 0;
             this.errorsListView.UseCompatibleStateImageBehavior = false;
             this.errorsListView.View = System.Windows.Forms.View.List;
@@ -201,10 +214,11 @@
             // missingTab
             // 
             this.missingTab.Controls.Add(this.missingFilesListView);
-            this.missingTab.Location = new System.Drawing.Point(4, 22);
+            this.missingTab.Location = new System.Drawing.Point(4, 29);
+            this.missingTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingTab.Name = "missingTab";
-            this.missingTab.Padding = new System.Windows.Forms.Padding(3);
-            this.missingTab.Size = new System.Drawing.Size(633, 661);
+            this.missingTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.missingTab.Size = new System.Drawing.Size(954, 989);
             this.missingTab.TabIndex = 2;
             this.missingTab.Text = "Missing Files";
             this.missingTab.UseVisualStyleBackColor = true;
@@ -212,20 +226,23 @@
             // missingFilesListView
             // 
             this.missingFilesListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.missingFilesListView.Location = new System.Drawing.Point(3, 3);
+            this.missingFilesListView.Location = new System.Drawing.Point(4, 5);
+            this.missingFilesListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingFilesListView.Name = "missingFilesListView";
-            this.missingFilesListView.Size = new System.Drawing.Size(627, 655);
+            this.missingFilesListView.Size = new System.Drawing.Size(946, 979);
             this.missingFilesListView.TabIndex = 1;
             this.missingFilesListView.UseCompatibleStateImageBehavior = false;
             this.missingFilesListView.View = System.Windows.Forms.View.List;
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.scanToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(641, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(9, 3, 0, 3);
+            this.menuStrip1.Size = new System.Drawing.Size(962, 35);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -234,25 +251,26 @@
             this.scanToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rescanToolStripMenuItem});
             this.scanToolStripMenuItem.Name = "scanToolStripMenuItem";
-            this.scanToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.scanToolStripMenuItem.Size = new System.Drawing.Size(61, 29);
             this.scanToolStripMenuItem.Text = "Scan";
             // 
             // rescanToolStripMenuItem
             // 
             this.rescanToolStripMenuItem.Name = "rescanToolStripMenuItem";
             this.rescanToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.rescanToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rescanToolStripMenuItem.Size = new System.Drawing.Size(212, 30);
             this.rescanToolStripMenuItem.Text = "Rescan";
             this.rescanToolStripMenuItem.Click += new System.EventHandler(this.rescanToolStripMenuItem_Click);
             // 
             // ReportForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(641, 687);
+            this.ClientSize = new System.Drawing.Size(962, 1057);
             this.Controls.Add(this.tabPages);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "ReportForm";
             this.Text = "Report";
             this.tabPages.ResumeLayout(false);
