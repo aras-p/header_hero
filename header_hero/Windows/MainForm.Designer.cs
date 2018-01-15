@@ -52,6 +52,8 @@
             this.projectDirsTextBox = new System.Windows.Forms.TextBox();
             this.projectDirContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label4 = new System.Windows.Forms.Label();
+            this.pchTextBox = new System.Windows.Forms.TextBox();
             this.menuBarMenuStrip.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.includeDirsContextMenuStrip.SuspendLayout();
@@ -189,26 +191,29 @@
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.lastScanLabel, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.projectDirsTextBox, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.pchTextBox, 1, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 35);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowCount = 4;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(908, 631);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(908, 661);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // includeDirsTextBox
             // 
             this.includeDirsTextBox.ContextMenuStrip = this.includeDirsContextMenuStrip;
             this.includeDirsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.includeDirsTextBox.Location = new System.Drawing.Point(154, 336);
+            this.includeDirsTextBox.Location = new System.Drawing.Point(154, 333);
             this.includeDirsTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.includeDirsTextBox.Multiline = true;
             this.includeDirsTextBox.Name = "includeDirsTextBox";
-            this.includeDirsTextBox.Size = new System.Drawing.Size(750, 290);
+            this.includeDirsTextBox.Size = new System.Drawing.Size(750, 287);
             this.includeDirsTextBox.TabIndex = 6;
             // 
             // includeDirsContextMenuStrip
@@ -229,7 +234,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 331);
+            this.label3.Location = new System.Drawing.Point(4, 328);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(94, 20);
@@ -254,7 +259,7 @@
             this.projectDirsTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.projectDirsTextBox.Multiline = true;
             this.projectDirsTextBox.Name = "projectDirsTextBox";
-            this.projectDirsTextBox.Size = new System.Drawing.Size(750, 290);
+            this.projectDirsTextBox.Size = new System.Drawing.Size(750, 287);
             this.projectDirsTextBox.TabIndex = 5;
             // 
             // projectDirContextMenuStrip
@@ -272,11 +277,28 @@
             this.addDirectoryToolStripMenuItem.Text = "Add Directory...";
             this.addDirectoryToolStripMenuItem.Click += new System.EventHandler(this.scan_AddDirectory_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 625);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(134, 20);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Precomp. header:";
+            // 
+            // pchTextBox
+            // 
+            this.pchTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pchTextBox.Location = new System.Drawing.Point(153, 628);
+            this.pchTextBox.Name = "pchTextBox";
+            this.pchTextBox.Size = new System.Drawing.Size(752, 26);
+            this.pchTextBox.TabIndex = 8;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(908, 666);
+            this.ClientSize = new System.Drawing.Size(908, 696);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.menuBarMenuStrip);
             this.MainMenuStrip = this.menuBarMenuStrip;
@@ -320,6 +342,8 @@
         private System.Windows.Forms.TextBox includeDirsTextBox;
         private System.Windows.Forms.TextBox projectDirsTextBox;
         private System.Windows.Forms.ToolStripMenuItem cleanRescanToolStripMenuItem;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox pchTextBox;
     }
 }
 

@@ -12,6 +12,7 @@ namespace HeaderHero.Data
         public List<string> AbsoluteIncludes { get; set; }
         public int Lines { get; set; }
         public bool Touched { get; set; }
+        public bool Precompiled { get; set; }
 
         public SourceFile()
         {
@@ -20,6 +21,7 @@ namespace HeaderHero.Data
             AbsoluteIncludes = new List<string>();
             Lines = 0;
             Touched = false;
+            Precompiled = false;
         }
 		
 		static public bool IsTranslationUnitExtension(string ext)

@@ -58,14 +58,16 @@ namespace HeaderHero.Parser
 
             // Summary
             {
-                int total_lines = _project.Files.Sum(kvp => kvp.Value.Lines);
+                int pch_lines = _project.Files.Where(kvp => kvp.Value.Precompiled).Sum(kvp => kvp.Value.Lines);
+                int total_lines = _project.Files.Sum(kvp => kvp.Value.Lines) - pch_lines;
                 int total_parsed = _analytics.Items
-					.Where (kvp => Data.SourceFile.IsTranslationUnitPath(kvp.Key))
+					.Where (kvp => Data.SourceFile.IsTranslationUnitPath(kvp.Key) && !_project.Files[kvp.Key].Precompiled)
 					.Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
                 float factor = (float)total_parsed / (float)total_lines;
                 Dictionary<string, string> table = new Dictionary<string, string> {
                     {"Files", string.Format("{0:### ### ###}", _project.Files.Count)},
                     {"Total Lines", string.Format("{0:### ### ###}", total_lines)},
+                    {"Total Precompiled", string.Format("{0:### ### ###} (<a href=\"#pch\">list</a>)", pch_lines)},
                     {"Total Parsed", string.Format("{0:### ### ###}", total_parsed)},
                     {"Blowup Factor", string.Format("{0:0.00} (<a href=\"#largest\">largest</a>, <a href=\"#hubs\">hubs</a>)", factor) }
                 };
@@ -75,7 +77,8 @@ namespace HeaderHero.Parser
             {
                 var most = _analytics.Items
                     .ToDictionary(kvp => kvp.Key, kvp => _project.Files[kvp.Key].Lines *
-						kvp.Value.TranslationUnitsIncludedBy.Count)
+                        kvp.Value.TranslationUnitsIncludedBy.Count)
+                    .Where(kvp => !_project.Files[kvp.Key].Precompiled)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "largest", "Biggest Contributors", most);
@@ -87,6 +90,14 @@ namespace HeaderHero.Parser
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "hubs", "Header Hubs", hubs);
+            }
+
+            {
+                var pch = _project.Files
+                    .Where(kvp => kvp.Value.Precompiled)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Lines)
+                    .OrderByDescending(kvp => kvp.Value);
+                AppendFileList(sb, "pch", "Precompiled Headers", pch);
             }
 
             html = html.Replace("%CONTENT%", sb.ToString());

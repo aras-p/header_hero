@@ -12,6 +12,7 @@ namespace HeaderHero.Parser
         HashSet<string> _queued;
         List<FileInfo> _scan_queue;
         Dictionary<string, string> _system_includes;
+        bool _scanning_pch = false;
         public bool CaseSensitive { get; set; }
 
         public List<string> Errors;
@@ -46,11 +47,33 @@ namespace HeaderHero.Parser
 
         public void Rescan(ProgressFeedback feedback)
         {
-            feedback.Title = "Scanning directories...";
-
+            feedback.Title = "Scanning precompiled header...";
             foreach (Data.SourceFile sf in _project.Files.Values)
+            {
                 sf.Touched = false;
+                sf.Precompiled = false;
+            }
 
+            // scan everything that goes into precompiled header
+            _scanning_pch = true;
+            if (!string.IsNullOrEmpty(_project.PrecompiledHeader) && File.Exists(_project.PrecompiledHeader))
+            {
+                var inc = new FileInfo(_project.PrecompiledHeader);
+                ScanFile(inc);
+                while (_scan_queue.Count > 0)
+                {
+                    FileInfo[] to_scan = _scan_queue.ToArray();
+                    _scan_queue.Clear();
+                    foreach (FileInfo fi in to_scan)
+                    {
+                        ScanFile(fi);
+                    }
+                }
+                _queued.Clear();
+            }
+            _scanning_pch = false;
+
+            feedback.Title = "Scanning directories...";
             foreach (string dir in _project.ScanDirectories)
             {
                 feedback.Message = dir;
@@ -128,7 +151,7 @@ namespace HeaderHero.Parser
         {
             string path = CanonicalPath(fi);
             Data.SourceFile sf = null;
-            if (_project.Files.ContainsKey(path) && _project.LastScan > fi.LastWriteTime)
+            if (_project.Files.ContainsKey(path) && _project.LastScan > fi.LastWriteTime && !_scanning_pch)
                 sf = _project.Files[path];
             else
             {
@@ -137,6 +160,7 @@ namespace HeaderHero.Parser
                 sf.Lines = res.Lines;
                 sf.LocalIncludes = res.LocalIncludes;
                 sf.SystemIncludes = res.SystemIncludes;
+                sf.Precompiled = _scanning_pch;
                 _project.Files[path] = sf;
             }
 
@@ -149,6 +173,9 @@ namespace HeaderHero.Parser
                 {
                     FileInfo inc = new FileInfo(Path.Combine(local_dir, s));
                     string abs = CanonicalPath(inc);
+                    // found a header that's part of PCH during regular scan: ignore it
+                    if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                        continue;
                     if (!inc.Exists)
                     {
                         if (!sf.SystemIncludes.Contains(s))
@@ -171,6 +198,9 @@ namespace HeaderHero.Parser
                     if (_system_includes.ContainsKey(s))
                     {
                         string abs = _system_includes[s];
+                        // found a header that's part of PCH during regular scan: ignore it
+                        if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                            continue;
                         sf.AbsoluteIncludes.Add(abs);
                     }
                     else
@@ -188,6 +218,10 @@ namespace HeaderHero.Parser
                         if (found != null)
                         {
                             string abs = CanonicalPath(found);
+                            // found a header that's part of PCH during regular scan: ignore it
+                            if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                                continue;
+
                             sf.AbsoluteIncludes.Add(abs);
                             _system_includes[s] = abs;
                             Enqueue(found, abs);

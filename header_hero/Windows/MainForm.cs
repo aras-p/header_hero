@@ -41,12 +41,14 @@ namespace HeaderHero
             lastScanLabel.Text = _project.LastScan.ToString();
             projectDirsTextBox.Text = String.Join("\r\n", _project.ScanDirectories.ToArray());
             includeDirsTextBox.Text = String.Join("\r\n", _project.IncludeDirectories.ToArray());
+            pchTextBox.Text = _project.PrecompiledHeader ?? string.Empty;
         }
 
         private void ParseProject()
         {
             _project.ScanDirectories = projectDirsTextBox.Text.Trim().Split('\n', '\r').Where(s => s.Trim().Length > 0).ToList();
             _project.IncludeDirectories = includeDirsTextBox.Text.Trim().Split('\n', '\r').Where(s => s.Trim().Length > 0).ToList();
+            _project.PrecompiledHeader = pchTextBox.Text.Trim();
         }
 
         #region Project Dirs
