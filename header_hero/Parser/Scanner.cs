@@ -97,6 +97,8 @@ namespace HeaderHero.Parser
                     ScanFile(fi);
                 }
             }
+            _queued.Clear();
+            _system_includes.Clear();
 
             foreach (var it in _project.Files.Where(kvp => !kvp.Value.Touched).ToList())
                 _project.Files.Remove(it.Key);
@@ -152,7 +154,9 @@ namespace HeaderHero.Parser
             string path = CanonicalPath(fi);
             Data.SourceFile sf = null;
             if (_project.Files.ContainsKey(path) && _project.LastScan > fi.LastWriteTime && !_scanning_pch)
+            {
                 sf = _project.Files[path];
+            }
             else
             {
                 Parser.Result res = Parser.ParseFile(fi, Errors);
@@ -175,7 +179,10 @@ namespace HeaderHero.Parser
                     string abs = CanonicalPath(inc);
                     // found a header that's part of PCH during regular scan: ignore it
                     if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                    {
+                        _project.Files[abs].Touched = true;
                         continue;
+                    }
                     if (!inc.Exists)
                     {
                         if (!sf.SystemIncludes.Contains(s))
@@ -200,7 +207,10 @@ namespace HeaderHero.Parser
                         string abs = _system_includes[s];
                         // found a header that's part of PCH during regular scan: ignore it
                         if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                        {
+                            _project.Files[abs].Touched = true;
                             continue;
+                        }
                         sf.AbsoluteIncludes.Add(abs);
                     }
                     else
@@ -220,7 +230,10 @@ namespace HeaderHero.Parser
                             string abs = CanonicalPath(found);
                             // found a header that's part of PCH during regular scan: ignore it
                             if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                            {
+                                _project.Files[abs].Touched = true;
                                 continue;
+                            }
 
                             sf.AbsoluteIncludes.Add(abs);
                             _system_includes[s] = abs;
