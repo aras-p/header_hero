@@ -37,14 +37,17 @@ namespace HeaderHero.Parser
 
         private ItemAnalytics Analyze(string path, Data.Project project)
         {
-            Data.SourceFile sf = project.Files[path];
-            if (!Items.ContainsKey(path))
-                Items[path] = new ItemAnalytics();
-            ItemAnalytics a = Items[path];
+            ItemAnalytics a;
+            if (!Items.TryGetValue(path, out a))
+            {
+                a = new ItemAnalytics();
+                Items.Add(path, a);
+            }
             if (a.Analyzed)
                 return a;
             a.Analyzed = true;
 
+            Data.SourceFile sf = project.Files[path];
             foreach (string include in sf.AbsoluteIncludes)
             {
                 if (include == path)
@@ -57,7 +60,7 @@ namespace HeaderHero.Parser
                 ai.AllIncludedBy.Add(path);
 				if (is_tu)
 					ai.TranslationUnitsIncludedBy.Add (path);
-				
+
 
                 a.AllIncludes.UnionWith(ai.AllIncludes);
                 foreach (string inc in ai.AllIncludes) {
