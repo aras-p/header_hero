@@ -119,7 +119,9 @@ namespace HeaderHero
             d.Start();
             _project.LastScan = started;
 
+            Cursor.Current = Cursors.WaitCursor;
             Setup(_project, _scanner);
+            Cursor.Current = Cursors.Default;
             if (_inspecting != null)
                 Inspect(_inspecting);
         }
