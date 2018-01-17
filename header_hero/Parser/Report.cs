@@ -80,7 +80,7 @@ namespace HeaderHero.Parser
                     .Where(kvp => !_project.Files[kvp.Key].Precompiled)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value)
-                    .Take(50);
+                    .Take(200);
                 AppendFileList(sb, "largest", "Biggest Contributors", most);
             }
 
@@ -89,7 +89,7 @@ namespace HeaderHero.Parser
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => kvp.Value > 0)
                     .OrderByDescending(kvp => kvp.Value)
-                    .Take(50);
+                    .Take(200);
                 AppendFileList(sb, "hubs", "Header Hubs", hubs);
             }
 
@@ -98,7 +98,7 @@ namespace HeaderHero.Parser
                     .Where(kvp => kvp.Value.Precompiled)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Lines)
                     .OrderByDescending(kvp => kvp.Value)
-                    .Take(50);
+                    .Take(200);
                 AppendFileList(sb, "pch", "Precompiled Headers", pch);
             }
 
