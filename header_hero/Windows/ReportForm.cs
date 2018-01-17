@@ -30,6 +30,7 @@ namespace HeaderHero
 
         private void Setup(Data.Project project, Parser.Scanner scanner)
         {
+            _history.Clear();
             _project = project;
             _scanner = scanner;
             _analytics = Parser.Analytics.Analyze(_project);
@@ -64,10 +65,17 @@ namespace HeaderHero
         }
 
         private string _inspecting;
+        private LinkedList<string> _history = new LinkedList<string>();
 
         private void Inspect(string file)
         {
             _inspecting = file;
+            if (_history.Count == 0 || _history.Last() != file)
+            {
+                _history.AddLast(file);
+                if (_history.Count > 10)
+                    _history.RemoveFirst();
+            }
 
             {
                 fileListView.Items.Clear();
@@ -124,6 +132,14 @@ namespace HeaderHero
             Cursor.Current = Cursors.Default;
             if (_inspecting != null)
                 Inspect(_inspecting);
+        }
+
+        private void btnBack_Click(object sender, EventArgs e)
+        {
+            if (_history.Count > 0)
+                _history.RemoveLast();
+            if (_history.Count > 0)
+                Inspect(_history.Last());
         }
     }
 }

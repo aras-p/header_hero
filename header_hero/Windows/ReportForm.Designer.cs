@@ -28,20 +28,26 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReportForm));
             this.tabPages = new System.Windows.Forms.TabControl();
             this.reportTab = new System.Windows.Forms.TabPage();
             this.reportBrowser = new System.Windows.Forms.WebBrowser();
             this.includeTab = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.includesListView = new System.Windows.Forms.ListView();
+            this.IncludesFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.IncludesCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.IncludesLines = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.fileListView = new System.Windows.Forms.ListView();
             this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.includedByListView = new System.Windows.Forms.ListView();
             this.ByFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ByCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ByLines = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.fileColHeader = new System.Windows.Forms.TableLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btnBack = new System.Windows.Forms.Button();
             this.errorsTab = new System.Windows.Forms.TabPage();
             this.errorsListView = new System.Windows.Forms.ListView();
             this.missingTab = new System.Windows.Forms.TabPage();
@@ -49,13 +55,11 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.scanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rescanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.IncludesFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.IncludesCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.IncludesLines = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPages.SuspendLayout();
             this.reportTab.SuspendLayout();
             this.includeTab.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.fileColHeader.SuspendLayout();
             this.errorsTab.SuspendLayout();
             this.missingTab.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -82,7 +86,7 @@
             this.reportTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.reportTab.Name = "reportTab";
             this.reportTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.reportTab.Size = new System.Drawing.Size(1012, 989);
+            this.reportTab.Size = new System.Drawing.Size(1380, 989);
             this.reportTab.TabIndex = 0;
             this.reportTab.Text = "Report";
             this.reportTab.UseVisualStyleBackColor = true;
@@ -94,7 +98,7 @@
             this.reportBrowser.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.reportBrowser.MinimumSize = new System.Drawing.Size(30, 31);
             this.reportBrowser.Name = "reportBrowser";
-            this.reportBrowser.Size = new System.Drawing.Size(1004, 979);
+            this.reportBrowser.Size = new System.Drawing.Size(1372, 979);
             this.reportBrowser.TabIndex = 0;
             // 
             // includeTab
@@ -118,9 +122,9 @@
             this.tableLayoutPanel1.Controls.Add(this.includesListView, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.fileListView, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.includedByListView, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.fileColHeader, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 5);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -146,6 +150,21 @@
             this.includesListView.UseCompatibleStateImageBehavior = false;
             this.includesListView.View = System.Windows.Forms.View.Details;
             // 
+            // IncludesFile
+            // 
+            this.IncludesFile.Text = "File";
+            this.IncludesFile.Width = 160;
+            // 
+            // IncludesCount
+            // 
+            this.IncludesCount.Text = "Count";
+            this.IncludesCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // IncludesLines
+            // 
+            this.IncludesLines.Text = "Lines";
+            this.IncludesLines.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // fileListView
             // 
             this.fileListView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -166,16 +185,6 @@
             this.label3.Size = new System.Drawing.Size(73, 20);
             this.label3.TabIndex = 2;
             this.label3.Text = "Includes:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(461, 0);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 20);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "File:";
             // 
             // label1
             // 
@@ -217,6 +226,44 @@
             this.ByLines.Text = "Lines";
             this.ByLines.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
+            // fileColHeader
+            // 
+            this.fileColHeader.ColumnCount = 2;
+            this.fileColHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.fileColHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.fileColHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.fileColHeader.Controls.Add(this.label2, 0, 0);
+            this.fileColHeader.Controls.Add(this.btnBack, 1, 0);
+            this.fileColHeader.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fileColHeader.Location = new System.Drawing.Point(457, 0);
+            this.fileColHeader.Margin = new System.Windows.Forms.Padding(0);
+            this.fileColHeader.Name = "fileColHeader";
+            this.fileColHeader.RowCount = 1;
+            this.fileColHeader.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.fileColHeader.Size = new System.Drawing.Size(457, 31);
+            this.fileColHeader.TabIndex = 6;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(38, 20);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "File:";
+            // 
+            // btnBack
+            // 
+            this.btnBack.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBack.Location = new System.Drawing.Point(417, 0);
+            this.btnBack.Margin = new System.Windows.Forms.Padding(0);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(40, 31);
+            this.btnBack.TabIndex = 1;
+            this.btnBack.Text = "<";
+            this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            // 
             // errorsTab
             // 
             this.errorsTab.Controls.Add(this.errorsListView);
@@ -224,7 +271,7 @@
             this.errorsTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.errorsTab.Name = "errorsTab";
             this.errorsTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.errorsTab.Size = new System.Drawing.Size(1012, 989);
+            this.errorsTab.Size = new System.Drawing.Size(1380, 989);
             this.errorsTab.TabIndex = 1;
             this.errorsTab.Text = "Errors";
             this.errorsTab.UseVisualStyleBackColor = true;
@@ -235,7 +282,7 @@
             this.errorsListView.Location = new System.Drawing.Point(4, 5);
             this.errorsListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.errorsListView.Name = "errorsListView";
-            this.errorsListView.Size = new System.Drawing.Size(1004, 979);
+            this.errorsListView.Size = new System.Drawing.Size(1372, 979);
             this.errorsListView.TabIndex = 0;
             this.errorsListView.UseCompatibleStateImageBehavior = false;
             this.errorsListView.View = System.Windows.Forms.View.List;
@@ -247,7 +294,7 @@
             this.missingTab.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingTab.Name = "missingTab";
             this.missingTab.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.missingTab.Size = new System.Drawing.Size(1012, 989);
+            this.missingTab.Size = new System.Drawing.Size(1380, 989);
             this.missingTab.TabIndex = 2;
             this.missingTab.Text = "Missing Files";
             this.missingTab.UseVisualStyleBackColor = true;
@@ -259,7 +306,7 @@
             this.missingFilesListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.missingFilesListView.Name = "missingFilesListView";
             this.missingFilesListView.ShowItemToolTips = true;
-            this.missingFilesListView.Size = new System.Drawing.Size(1004, 979);
+            this.missingFilesListView.Size = new System.Drawing.Size(1372, 979);
             this.missingFilesListView.TabIndex = 1;
             this.missingFilesListView.UseCompatibleStateImageBehavior = false;
             this.missingFilesListView.View = System.Windows.Forms.View.List;
@@ -292,21 +339,6 @@
             this.rescanToolStripMenuItem.Text = "Rescan";
             this.rescanToolStripMenuItem.Click += new System.EventHandler(this.rescanToolStripMenuItem_Click);
             // 
-            // IncludesFile
-            // 
-            this.IncludesFile.Text = "File";
-            this.IncludesFile.Width = 160;
-            // 
-            // IncludesCount
-            // 
-            this.IncludesCount.Text = "Count";
-            this.IncludesCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // IncludesLines
-            // 
-            this.IncludesLines.Text = "Lines";
-            this.IncludesLines.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // ReportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -314,6 +346,7 @@
             this.ClientSize = new System.Drawing.Size(1388, 1057);
             this.Controls.Add(this.tabPages);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "ReportForm";
@@ -323,6 +356,8 @@
             this.includeTab.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.fileColHeader.ResumeLayout(false);
+            this.fileColHeader.PerformLayout();
             this.errorsTab.ResumeLayout(false);
             this.missingTab.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
@@ -346,7 +381,6 @@
         private System.Windows.Forms.ListView includesListView;
         private System.Windows.Forms.ListView fileListView;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListView includedByListView;
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -358,5 +392,8 @@
         private System.Windows.Forms.ColumnHeader IncludesFile;
         private System.Windows.Forms.ColumnHeader IncludesCount;
         private System.Windows.Forms.ColumnHeader IncludesLines;
+        private System.Windows.Forms.TableLayoutPanel fileColHeader;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnBack;
     }
 }
