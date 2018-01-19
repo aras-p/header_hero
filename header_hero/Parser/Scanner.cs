@@ -254,6 +254,16 @@ namespace HeaderHero.Parser
                 }
                 
             }
+
+            // Only treat each include as done once. Since we completely ignore preprocessor, for patterns like
+            // this we'd end up having same file in includes list multiple times. Let's assume that all includes use
+            // pragma once or include guards and are only actually parsed just once.
+            //   #if FOO
+            //   #include <bar>
+            //   #else
+            //   #include <bar>
+            //   #endif
+            sf.AbsoluteIncludes = sf.AbsoluteIncludes.Distinct().ToList();
         }
     }
 }
