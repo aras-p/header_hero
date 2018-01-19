@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReportForm));
             this.tabPages = new System.Windows.Forms.TabControl();
             this.reportTab = new System.Windows.Forms.TabPage();
             this.reportBrowser = new System.Windows.Forms.WebBrowser();
@@ -38,7 +37,6 @@
             this.IncludesFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.IncludesCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.IncludesLines = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.fileListView = new System.Windows.Forms.ListView();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.includedByListView = new System.Windows.Forms.ListView();
@@ -55,6 +53,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.scanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rescanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fileListText = new System.Windows.Forms.TextBox();
             this.tabPages.SuspendLayout();
             this.reportTab.SuspendLayout();
             this.includeTab.SuspendLayout();
@@ -120,11 +119,11 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel1.Controls.Add(this.includesListView, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.fileListView, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 2, 0);
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.includedByListView, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.fileColHeader, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.fileListText, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(4, 5);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -164,17 +163,6 @@
             // 
             this.IncludesLines.Text = "Lines";
             this.IncludesLines.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // fileListView
-            // 
-            this.fileListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fileListView.Location = new System.Drawing.Point(461, 36);
-            this.fileListView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(449, 938);
-            this.fileListView.TabIndex = 4;
-            this.fileListView.UseCompatibleStateImageBehavior = false;
-            this.fileListView.View = System.Windows.Forms.View.List;
             // 
             // label3
             // 
@@ -339,6 +327,18 @@
             this.rescanToolStripMenuItem.Text = "Rescan";
             this.rescanToolStripMenuItem.Click += new System.EventHandler(this.rescanToolStripMenuItem_Click);
             // 
+            // fileListText
+            // 
+            this.fileListText.BackColor = System.Drawing.SystemColors.Window;
+            this.fileListText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fileListText.Location = new System.Drawing.Point(461, 36);
+            this.fileListText.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.fileListText.Multiline = true;
+            this.fileListText.Name = "fileListText";
+            this.fileListText.ReadOnly = true;
+            this.fileListText.Size = new System.Drawing.Size(449, 938);
+            this.fileListText.TabIndex = 7;
+            // 
             // ReportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -346,7 +346,6 @@
             this.ClientSize = new System.Drawing.Size(1388, 1057);
             this.Controls.Add(this.tabPages);
             this.Controls.Add(this.menuStrip1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "ReportForm";
@@ -379,7 +378,6 @@
         private System.Windows.Forms.WebBrowser reportBrowser;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ListView includesListView;
-        private System.Windows.Forms.ListView fileListView;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListView includedByListView;
@@ -395,5 +393,6 @@
         private System.Windows.Forms.TableLayoutPanel fileColHeader;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnBack;
+        private System.Windows.Forms.TextBox fileListText;
     }
 }

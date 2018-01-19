@@ -77,11 +77,15 @@ namespace HeaderHero
             }
 
             {
-                fileListView.Items.Clear();
-                string text = string.Format("{0} ({1})", Path.GetFileName(file), _analytics.Items[file].TotalIncludeLines);
-                ListViewItem item = new ListViewItem(text);
-                item.Tag = file;
-                fileListView.Items.Add(item);
+                var projectFile = _project.Files[file];
+                var analyticsFile = _analytics.Items[file];
+                var fileLines = projectFile.Lines;
+                var directLines = projectFile.AbsoluteIncludes.Sum(f => _project.Files[f].Lines);
+                var directCount = projectFile.AbsoluteIncludes.Count;
+                var totalLines = analyticsFile.TotalIncludeLines;
+                var totalCount = analyticsFile.AllIncludes.Count;
+                string text = $"{Path.GetFileName(file)}\r\n\r\nLines: {fileLines}\r\nDirect Includes: {directLines} lines, {directCount} files\r\nTotal Includes: {totalLines} lines, {totalCount} files";
+                fileListText.Text = text;
             }
 
             {
