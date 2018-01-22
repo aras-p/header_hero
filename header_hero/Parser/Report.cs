@@ -79,8 +79,7 @@ namespace HeaderHero.Parser
                         kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => !_project.Files[kvp.Key].Precompiled)
                     .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value)
-                    .Take(200);
+                    .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "largest", "Biggest Contributors", most);
             }
 
@@ -88,8 +87,7 @@ namespace HeaderHero.Parser
                 var hubs = _analytics.Items
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.TranslationUnitsIncludedBy.Count)
                     .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value)
-                    .Take(200);
+                    .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "hubs", "Header Hubs", hubs);
             }
 
@@ -97,8 +95,7 @@ namespace HeaderHero.Parser
                 var pch = _project.Files
                     .Where(kvp => kvp.Value.Precompiled)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Lines)
-                    .OrderByDescending(kvp => kvp.Value)
-                    .Take(200);
+                    .OrderByDescending(kvp => kvp.Value);
                 AppendFileList(sb, "pch", "Precompiled Headers", pch);
             }
 
