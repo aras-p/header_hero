@@ -124,7 +124,7 @@ namespace HeaderHero.Parser
 
             foreach (FileInfo file in files)
             {
-                if (file.Extension == @".cpp" || file.Extension == @".c" || file.Extension == @".cc" || file.Extension == @".cxx")
+                if (file.Extension == ".cpp" || file.Extension == ".c" || file.Extension == ".cc" || file.Extension == ".cxx" || file.Extension == ".mm" || file.Extension == ".m")
                     Enqueue(file, CanonicalPath(file));
             }
             foreach (DirectoryInfo subdir in subdirs)

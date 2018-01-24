@@ -26,7 +26,7 @@ namespace HeaderHero.Data
 		
 		static public bool IsTranslationUnitExtension(string ext)
 		{
-			return (ext == @".cpp" || ext == @".c" || ext == @".cc" || ext == @".cxx");
+			return (ext == ".cpp" || ext == ".c" || ext == ".cc" || ext == ".cxx" || ext == ".mm" || ext == ".m");
 		}
 		
 		static public bool IsTranslationUnitPath(string path)
