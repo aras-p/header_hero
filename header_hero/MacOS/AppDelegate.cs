@@ -58,7 +58,7 @@ namespace HeaderHero
 			string projects = mainWindowController.projectDirsTextView.TextStorage.Value;
             _project.ScanDirectories = projects.Trim().Split('\n').Where(s => s.Trim().Length > 0).ToList();
             
-			string includes = mainWindowController.projectDirsTextView.TextStorage.Value;
+            string includes = mainWindowController.includeDirsTextView.TextStorage.Value;
 			_project.IncludeDirectories = includes.Trim().Split('\n').Where(s => s.Trim().Length > 0).ToList();
         }
 		
