@@ -1,9 +1,6 @@
-syntax: glob
-
 obj
 bin
 .vs
-
 *.exe
 *.user
 *.suo
