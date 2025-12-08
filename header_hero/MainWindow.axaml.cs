@@ -1,5 +1,8 @@
+using System;
+using System.IO;
 using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using HeaderHero.Serialization;
 
 namespace HeaderHero;
@@ -19,6 +22,8 @@ public partial class MainWindow : Window
         OpenProjectMenu.Click += (_, _) => OpenProject();
         SaveProjectMenu.Click += (_, _) => SaveProject();
         CloseProjectMenu.Click += (_, _) => NewProject();
+        ScanMenu.Click += (_, _) => ScanProject();
+        CleanRescanMenu.Click += (_, _) => ClearRescanProject();
         QuitMenu.Click += (_, _) => this.Close();
         this.Closing += OnWindowClosing;
 
@@ -26,13 +31,13 @@ public partial class MainWindow : Window
         //projectDirsTextBox.MouseDoubleClick += (_1, _2) => scan_AddDirectory_Click(_1, null);
         //includeDirsTextBox.MouseDoubleClick += (_1, _2) => include_AddDirectory_Click(_1, null);
 
-        //@TODO
-        //string last = Properties.Settings.Default.LastProject;
-        //if (last != null && last != "" && File.Exists(last))
-        //{
-        //    Open(last);
-        //    scanToolStripMenuItem1_Click(null, null);
-        //}
+        var settings = AppSettings.Instance;
+        var lastProject = settings.LastProject;
+        if (!string.IsNullOrEmpty(lastProject) && File.Exists(lastProject))
+        {
+            Open(lastProject);
+            //ScanProject(); //@TODO
+        }
     }
 
     void DisplayProject()
@@ -102,13 +107,14 @@ public partial class MainWindow : Window
             return;
 
         var path = result[0];
+        AppSettings.Instance.LastProject = path;
+        AppSettings.Instance.Save();
         Open(path);
     }
 
     void Open(string path)
     {
         _file = path;
-        //Properties.Settings.Default.LastProject = _file; //@TODO
         _project = new HeaderHero.Data.Project();
         JsonSerializer.Load(_project, Sjson.Load(path));
         MarkSave();
@@ -132,7 +138,8 @@ public partial class MainWindow : Window
         if (_file == null)
             return;
 
-        //Properties.Settings.Default.LastProject = _file; //@TODO
+        AppSettings.Instance.LastProject = _file;
+        AppSettings.Instance.Save();
         ParseProject();
         Sjson.Save(JsonSerializer.Save(_project), _file);
         MarkSave();
@@ -140,8 +147,51 @@ public partial class MainWindow : Window
 
     void OnWindowClosing(object? sender, WindowClosingEventArgs e)
     {
-        // Properties.Settings.Default.Save(); //@TODO
         if (!CheckSave())
             e.Cancel = true;
+    }
+
+    async void ScanProject()
+    {
+        ParseProject();
+        var scanner = new Parser.Scanner(_project);
+
+        DateTime started = DateTime.Now;
+
+        ProgressDialog dlg = new ProgressDialog();
+        var feedback = dlg.Feedback;
+        dlg.Start(async (fb) =>
+        {
+            var scanner = new Parser.Scanner(_project);
+            scanner.Rescan(fb);
+        });
+
+        // Poll every 100ms until the dialog closes
+        var timer = new System.Timers.Timer(100);
+        timer.Elapsed += (_, _) =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (!dlg.IsVisible)
+                    timer.Stop();
+                else
+                    dlg.Poll();
+            });
+        };
+        timer.Start();
+
+        await dlg.ShowDialog(this);
+
+        _project.LastScan = started;
+        DisplayProject();
+
+        //ReportForm rf = new ReportForm(_project, scanner); //@TODO
+        //rf.Show();
+    }
+
+    void ClearRescanProject()
+    {
+        _project.Clean();
+        ScanProject();
     }
 }

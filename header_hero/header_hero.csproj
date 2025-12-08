@@ -5,6 +5,8 @@
         <Nullable>disable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>HeaderHero</AssemblyName>
+        <RootNamespace>HeaderHero</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
