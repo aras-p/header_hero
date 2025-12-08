@@ -1,0 +1,68 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HeaderHero.MainWindow"
+        Title="Header Hero">
+        <Grid RowDefinitions="Auto,*">
+                <!-- Menu bar -->
+                <Menu Grid.Row="0">
+                        <MenuItem Header="_File">
+                                <MenuItem Header="_New Project" x:Name="NewProjectMenu"/>
+                                <Separator/>
+                                <MenuItem Header="_Open Project..." x:Name="OpenProjectMenu"/>
+                                <MenuItem Header="_Close Project" x:Name="CloseProjectMenu"/>
+                                <MenuItem Header="_Save Project..." x:Name="SaveProjectMenu"/>
+                                <Separator/>
+                                <MenuItem Header="_Quit" x:Name="QuitMenu"/>
+                        </MenuItem>
+
+                        <MenuItem Header="_Scan">
+                                <MenuItem Header="_Scan" x:Name="ScanMenu"/>
+                                <MenuItem Header="_Clean Rescan" x:Name="CleanRescanMenu"/>
+                        </MenuItem>
+                </Menu>
+                <!-- Main content -->
+                <Grid Grid.Row="1"
+                      Margin="8"
+                      ColumnDefinitions="150,*"
+                      RowDefinitions="Auto,*,*,Auto">
+
+                        <!-- Row 0: Last scan -->
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Margin="0,0,8,4"
+                                   Text="Last scan:"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   x:Name="LastScanLabel"
+                                   Text="(never scanned)"
+                                   VerticalAlignment="Center"/>
+
+                        <!-- Row 1: Project dirs -->
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Margin="0,4,8,4"
+                                   Text="Project dirs:"/>
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 x:Name="ProjectDirsTextBox"
+                                 AcceptsReturn="True"
+                                 VerticalAlignment="Stretch"/>
+
+                        <!-- Row 2: Include dirs -->
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Margin="0,4,8,4"
+                                   Text="Include dirs:"/>
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                 x:Name="IncludeDirsTextBox"
+                                 AcceptsReturn="True"
+                                 VerticalAlignment="Stretch"/>
+
+                        <!-- Row 3: Precomp header -->
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Margin="0,4,8,0"
+                                   Text="Precomp. header:"/>
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 x:Name="PchTextBox"
+                                 VerticalAlignment="Center"/>
+                </Grid>
+        </Grid>
+</Window>

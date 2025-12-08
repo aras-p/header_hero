@@ -6,6 +6,14 @@ using System.IO;
 
 namespace HeaderHero.Parser
 {
+    public class ProgressFeedback
+    {
+        public string Title = "";
+        public int Item = 0;
+        public int Count = 0;
+        public string Message = "";
+    }
+
     public class Scanner
     {
         Data.Project _project;
