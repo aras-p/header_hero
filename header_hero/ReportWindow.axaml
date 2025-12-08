@@ -1,0 +1,53 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HeaderHero"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HeaderHero.ReportWindow"
+        Title="Report"
+        Width="1000" Height="700">
+    <TabControl x:Name="Tabs">
+        <TabItem Header="Report">
+            <ScrollViewer Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Report" FontWeight="Bold" Margin="0,0,0,4"/>
+
+                    <TextBlock x:Name="SummaryText"
+                               FontFamily="Consolas,Monospace"
+                               TextWrapping="NoWrap"/>
+
+                    <TextBlock Text="Biggest contributors:" Margin="0,12,0,4"/>
+
+                    <ListBox x:Name="BiggestList"
+                             Height="300"
+                             DoubleTapped="OnBiggestDoubleTapped">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="local:Parser.ReportFile">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="{Binding count}" Width="60"/>
+                                    <TextBlock Text="{Binding name}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Includes">
+            <ScrollViewer Padding="12">
+                <TextBlock Text="Includes tab placeholder"/>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Errors">
+            <ScrollViewer Padding="12">
+                <TextBlock Text="Errors tab placeholder"/>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Missing Files">
+            <ScrollViewer Padding="12">
+                <TextBlock Text="Missing Files tab placeholder"/>
+            </ScrollViewer>
+        </TabItem>
+    </TabControl>
+</Window>

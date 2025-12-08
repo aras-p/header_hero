@@ -185,8 +185,8 @@ public partial class MainWindow : Window
         _project.LastScan = started;
         DisplayProject();
 
-        //ReportForm rf = new ReportForm(_project, scanner); //@TODO
-        //rf.Show();
+        ReportWindow report = new ReportWindow(_project, scanner);
+        report.Show();
     }
 
     void ClearRescanProject()
