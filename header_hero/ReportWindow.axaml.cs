@@ -27,9 +27,9 @@ public partial class ReportWindow : Window
         _scanner = scanner;
         InitializeComponent();
 
-        //Cursor.Current = Cursors.WaitCursor; //@TODO
+        GetTopLevel(this)!.Cursor = new Cursor(StandardCursorType.Wait);
         Setup(project, scanner);
-        //Cursor.Current = Cursors.Default; //@TODO
+        GetTopLevel(this)!.Cursor = new Cursor(StandardCursorType.Arrow);
     }
 
     void OnBiggestDoubleTapped(object? sender, TappedEventArgs e)
