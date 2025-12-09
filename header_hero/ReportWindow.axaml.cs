@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -8,11 +10,16 @@ using HeaderHero.Parser;
 
 namespace HeaderHero;
 
+public record IncludeRow(string Name, string FullPath, int Count, int Lines);
+
 public partial class ReportWindow : Window
 {
     Data.Project _project;
     Analytics _analytics;
     Parser.Scanner _scanner;
+    string _inspecting;
+    LinkedList<string> _history = new LinkedList<string>();
+
 
     public ReportWindow(Data.Project project, Parser.Scanner scanner)
     {
@@ -39,13 +46,68 @@ public partial class ReportWindow : Window
         }
     }
 
-    private void Inspect(string file)
+    void IncludedBy_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        // next step will fill this out
-        Console.WriteLine("INSPECT: " + file);
+        if (IncludedByList.SelectedItem is IncludeRow row)
+            Inspect(row.FullPath);
     }
 
-    private void Setup(Data.Project project, Parser.Scanner scanner)
+    void Includes_OnDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (IncludesList.SelectedItem is IncludeRow row)
+            Inspect(row.FullPath);
+    }
+
+    void BackButton_OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (_history.Count > 0)
+            _history.RemoveLast();
+        if (_history.Count > 0)
+            Inspect(_history.Last!.Value);
+    }
+
+    void Inspect(string file)
+    {
+        _inspecting = file;
+        if (_history.Count == 0 || _history.Last() != file)
+        {
+            _history.AddLast(file);
+            if (_history.Count > 10)
+                _history.RemoveFirst();
+        }
+        Console.WriteLine("HISTORY: " + string.Join(" | ", _history));
+
+        // center text
+        {
+            var projectFile = _project.Files[file];
+            var analyticsFile = _analytics.Items[file];
+            var fileLines = projectFile.Lines;
+            var directLines = projectFile.AbsoluteIncludes.Sum(f => _project.Files[f].Lines);
+            var directCount = projectFile.AbsoluteIncludes.Count;
+            var totalLines = analyticsFile.TotalIncludeLines;
+            var totalCount = analyticsFile.AllIncludes.Count;
+            string text = $"{Path.GetFileName(file)}\r\n\r\nLines: {fileLines}\r\nDirect Includes: {directLines} lines, {directCount} files\r\nTotal Includes: {totalLines} lines, {totalCount} files";
+            FileDetailsText.Text = text;
+        }
+
+        // left panel
+        {
+            List<IncludeRow> list = _project.Files[file].AbsoluteIncludes
+                .OrderByDescending(f => _analytics.Items[f].AllIncludes.Count)
+                .Select(s => new IncludeRow(Path.GetFileName(s), s, _analytics.Items[s].AllIncludes.Count, _analytics.Items[s].TotalIncludeLines)).ToList();
+            IncludesList.ItemsSource = list;
+        }
+
+        // right panel
+        {
+            IEnumerable<string> included = _project.Files.Where(kvp => kvp.Value.AbsoluteIncludes.Contains(file)).Select(kvp => kvp.Key);
+            List<IncludeRow> list = included.OrderByDescending(s => _analytics.Items[s].AllIncludedBy.Count)
+                .Select(s => new IncludeRow(Path.GetFileName(s), s, _analytics.Items[s].AllIncludedBy.Count, _analytics.Items[s].TotalIncludeLines)).ToList();
+            IncludedByList.ItemsSource = list;
+        }
+    }
+
+    void Setup(Data.Project project, Parser.Scanner scanner)
     {
         //_history.Clear(); //@TODO
         _project = project;

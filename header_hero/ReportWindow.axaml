@@ -35,9 +35,89 @@
             </ScrollViewer>
         </TabItem>
         <TabItem Header="Includes">
-            <ScrollViewer Padding="12">
-                <TextBlock Text="Includes tab placeholder"/>
-            </ScrollViewer>
+            <Grid Margin="12"
+                  RowDefinitions="Auto,*"
+                  ColumnDefinitions="*,*,*">
+
+                <!-- Top labels -->
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <TextBlock Text="Included by:" Margin="0,0,0,2"/>
+                    <Grid ColumnDefinitions="*,70,70">
+                        <TextBlock Grid.Column="0" Text="File"  FontWeight="Bold"/>
+                        <TextBlock Grid.Column="1" Text="Count" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
+                        <TextBlock Grid.Column="2" Text="Lines" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="8">
+                    <Button x:Name="BackButton" Content="← Back" Width="70" Click="BackButton_OnClick"/>
+                    <TextBlock x:Name="CurrentFileLabel"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="2">
+                    <TextBlock Text="Includes:" Margin="0,0,0,2"/>
+                    <Grid ColumnDefinitions="*,70,70">
+                        <TextBlock Grid.Column="0" Text="File"  FontWeight="Bold"/>
+                        <TextBlock Grid.Column="1" Text="Count" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
+                        <TextBlock Grid.Column="2" Text="Lines" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Bottom row: three panes -->
+                <!-- Left: Included by -->
+                <ListBox x:Name="IncludedByList"
+                         Grid.Row="1" Grid.Column="0" DoubleTapped="IncludedBy_OnDoubleTapped">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:IncludeRow">
+                            <Grid ColumnDefinitions="*,70,70" Margin="0,0,0,2">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Name}" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Count}"
+                                           TextAlignment="Right"
+                                           Margin="12,0,0,0"/>
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Lines}"
+                                           TextAlignment="Right"
+                                           Margin="12,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Middle: file details -->
+                <TextBox x:Name="FileDetailsText"
+                         Grid.Row="1" Grid.Column="1"
+                         IsReadOnly="True"
+                         AcceptsReturn="True"
+                         AcceptsTab="True"
+                         TextWrapping="Wrap"/>
+
+                <!-- Right: Includes -->
+                <ListBox x:Name="IncludesList"
+                         Grid.Row="1" Grid.Column="2" DoubleTapped="Includes_OnDoubleTapped">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:IncludeRow">
+                            <Grid ColumnDefinitions="*,70,70" Margin="0,0,0,2">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Name}" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Count}"
+                                           TextAlignment="Right"
+                                           Margin="12,0,0,0"/>
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding Lines}"
+                                           TextAlignment="Right"
+                                           Margin="12,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </Grid>
         </TabItem>
         <TabItem Header="Errors">
             <ScrollViewer Padding="12">
