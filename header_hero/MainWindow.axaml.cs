@@ -159,10 +159,8 @@ public partial class MainWindow : Window
         DateTime started = DateTime.Now;
 
         ProgressDialog dlg = new ProgressDialog();
-        var feedback = dlg.Feedback;
         dlg.Start(async (fb) =>
         {
-            var scanner = new Parser.Scanner(_project);
             scanner.Rescan(fb);
         });
 

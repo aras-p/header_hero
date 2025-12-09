@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using HeaderHero.Parser;
 
 namespace HeaderHero;
 
 public record IncludeRow(string Name, string FullPath, int Count, int Lines);
+public record MissingFilesRow(string Name, string Origin);
 
 public partial class ReportWindow : Window
 {
@@ -23,14 +22,10 @@ public partial class ReportWindow : Window
 
     public ReportWindow(Data.Project project, Parser.Scanner scanner)
     {
-        //_history.Clear(); //@TODO
+        _history.Clear();
         _project = project;
         _scanner = scanner;
         InitializeComponent();
-
-        //@TODO
-        //includedByListView.MouseDoubleClick += new MouseEventHandler(includedByListView_MouseDoubleClick);
-        //includesListView.MouseDoubleClick += new MouseEventHandler(includedByListView_MouseDoubleClick);
 
         //Cursor.Current = Cursors.WaitCursor; //@TODO
         Setup(project, scanner);
@@ -109,23 +104,17 @@ public partial class ReportWindow : Window
 
     void Setup(Data.Project project, Parser.Scanner scanner)
     {
-        //_history.Clear(); //@TODO
+        _history.Clear();
         _project = project;
         _scanner = scanner;
         _analytics = Parser.Analytics.Analyze(_project);
 
-        /*@TODO
-        errorsListView.Items.Clear();
-        foreach (string s in scanner.Errors)
-            errorsListView.Items.Add(s);
-        missingFilesListView.Items.Clear();
-        foreach (var s in scanner.NotFound.OrderBy(s => s))
-        {
-            var li = new ListViewItem(s);
-            li.ToolTipText = scanner.NotFoundOrigins[s];
-            missingFilesListView.Items.Add(li);
-        }
-        */
+        ErrorsList.ItemsSource = scanner.Errors;
+        var notFoundItems = scanner.NotFound
+            .OrderBy(s => s)
+            .Select(s => new MissingFilesRow(s, _scanner.NotFoundOrigins[s]))
+            .ToList();
+        MissingFilesList.ItemsSource = notFoundItems;
 
         Report rpt = new Report(_project, _analytics);
         SummaryText.Text = rpt.summary;

@@ -120,14 +120,16 @@
             </Grid>
         </TabItem>
         <TabItem Header="Errors">
-            <ScrollViewer Padding="12">
-                <TextBlock Text="Errors tab placeholder"/>
-            </ScrollViewer>
+            <ListBox x:Name="ErrorsList" Margin="12"/>
         </TabItem>
         <TabItem Header="Missing Files">
-            <ScrollViewer Padding="12">
-                <TextBlock Text="Missing Files tab placeholder"/>
-            </ScrollViewer>
+            <ListBox x:Name="MissingFilesList" Margin="12">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="local:MissingFilesRow">
+                        <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Origin}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </TabItem>
     </TabControl>
 </Window>
