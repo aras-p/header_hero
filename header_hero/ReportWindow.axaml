@@ -1,16 +1,15 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HeaderHero"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="HeaderHero.ReportWindow"
         Title="Report"
-        Width="1000" Height="700">
+        Width="1000" Height="700"
+        MinWidth="400" MinHeight="300">
     <Window.Styles>
         <Styles>
             <Style Selector="TabControl > TabItem">
                 <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}"/>
+                <Setter Property="FontWeight" Value="Normal"/>
                 <Setter Property="Padding" Value="6,4"/>
                 <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}"/>
                 <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
@@ -21,7 +20,6 @@
             <Style Selector="TabControl > TabItem:selected">
                 <Setter Property="Background" Value="{DynamicResource ThemeControlLowBrush}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderHighBrush}"/>
-                <Setter Property="BorderThickness" Value="1,1,1,0"/>
                 <Setter Property="FontWeight" Value="Normal"/>
             </Style>
             <Style Selector="TabControl > TabItem:selected /template/ Border#PART_SelectedPipe">
@@ -29,32 +27,27 @@
             </Style>
         </Styles>
     </Window.Styles>
+    <Window.Resources>
+        <DataTemplate x:Key="ReportFileTemplate"
+                      x:DataType="local:Parser.ReportFile">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="{Binding count}" Width="60"/>
+                <TextBlock Text="{Binding name}"/>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
     <TabControl x:Name="Tabs">
         <TabItem Header="Report">
-            <ScrollViewer Padding="12">
-                <StackPanel Spacing="8">
-                    <TextBlock Text="Report" FontWeight="Bold" Margin="0,0,0,4"/>
-
-                    <TextBlock x:Name="SummaryText"
-                               FontFamily="Consolas,Monospace"
-                               TextWrapping="NoWrap"/>
-
-                    <TextBlock Text="Biggest contributors:" Margin="0,12,0,4"/>
-
-                    <ListBox x:Name="BiggestList"
-                             Height="300"
-                             DoubleTapped="OnBiggestDoubleTapped">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="local:Parser.ReportFile">
-                                <StackPanel Orientation="Horizontal" Spacing="12">
-                                    <TextBlock Text="{Binding count}" Width="60"/>
-                                    <TextBlock Text="{Binding name}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-            </ScrollViewer>
+            <Grid RowDefinitions="Auto,Auto,Auto,3*,Auto,3*,Auto,*" Margin="12">
+                <TextBlock Grid.Row="0" Text="Report" FontWeight="Bold" />
+                <TextBox Grid.Row="1" x:Name="SummaryText" FontFamily="Consolas,Monospace" TextWrapping="NoWrap" IsReadOnly="True"/>
+                <TextBlock Grid.Row="2" Text="Biggest contributors:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="3" x:Name="BiggestList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+                <TextBlock Grid.Row="4" Text="Header Hubs:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="5" x:Name="HeaderHubsList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+                <TextBlock Grid.Row="6" Text="Precompiled Headers:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="7" x:Name="PrecompiledHeadersList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+            </Grid>
         </TabItem>
         <TabItem Header="Includes">
             <Grid Margin="12"

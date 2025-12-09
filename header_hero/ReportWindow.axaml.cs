@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Avalonia.Controls;
@@ -32,13 +31,12 @@ public partial class ReportWindow : Window
         GetTopLevel(this)!.Cursor = new Cursor(StandardCursorType.Arrow);
     }
 
-    void OnBiggestDoubleTapped(object? sender, TappedEventArgs e)
+    void ReportFileList_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (BiggestList.SelectedItem is ReportFile rf)
-        {
-            Inspect(rf.path);
-            Tabs.SelectedIndex = 1; // we'll build the Includes tab next
-        }
+        if (sender is not ListBox lb) return;
+        if (lb.SelectedItem is not ReportFile rf) return;
+        Inspect(rf.path);
+        Tabs.SelectedIndex = 1; // we'll build the Includes tab next
     }
 
     void IncludedBy_OnDoubleTapped(object? sender, TappedEventArgs e)
@@ -70,7 +68,6 @@ public partial class ReportWindow : Window
             if (_history.Count > 10)
                 _history.RemoveFirst();
         }
-        Console.WriteLine("HISTORY: " + string.Join(" | ", _history));
 
         // center text
         {
@@ -120,6 +117,8 @@ public partial class ReportWindow : Window
         SummaryText.Text = rpt.summary;
 
         BiggestList.ItemsSource = rpt.largest;
+        HeaderHubsList.ItemsSource = rpt.hubs;
+        PrecompiledHeadersList.ItemsSource = rpt.precompiled;
     }
 
 }

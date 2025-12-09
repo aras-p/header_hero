@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.IO;
@@ -53,12 +54,16 @@ namespace HeaderHero.Parser
 				.Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
             float factor = (float)total_parsed / (float)total_lines;
 
+            const int valueWidth = 12;
+            var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+            nfi.NumberGroupSeparator = " ";
+
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Files             {_project.Files.Count:### ### ###}");
-            sb.AppendLine($"Total Lines       {total_lines:### ### ###}");
-            sb.AppendLine($"Total Precompiled {pch_lines:### ### ###}"); //@TODO link (list)
-            sb.AppendLine($"Total Parsed      {total_parsed:### ### ###}");
-            sb.AppendLine($"Blowup Factor     {factor:0.00}"); //@TODO: links (largest, hubs)
+            sb.AppendLine($"Files             {_project.Files.Count.ToString("N0",nfi),valueWidth}");
+            sb.AppendLine($"Total Lines       {total_lines.ToString("N0",nfi),valueWidth}");
+            sb.AppendLine($"Total Precompiled {pch_lines.ToString("N0",nfi),valueWidth}");
+            sb.AppendLine($"Total Parsed      {total_parsed.ToString("N0",nfi),valueWidth}");
+            sb.AppendLine($"Blowup Factor     {factor.ToString("0.00",nfi),valueWidth}");
             return sb.ToString();
         }
 
