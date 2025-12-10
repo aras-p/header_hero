@@ -16,8 +16,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        //this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); //@TODO
-
         NewProjectMenu.Click += (_, _) => NewProject();
         OpenProjectMenu.Click += (_, _) => OpenProject();
         SaveProjectMenu.Click += (_, _) => SaveProject();

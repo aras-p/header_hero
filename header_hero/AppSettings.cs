@@ -25,7 +25,11 @@ public sealed class AppSettings
             if (File.Exists(SettingsPath))
             {
                 var json = File.ReadAllText(SettingsPath);
-                return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+                using var doc = JsonDocument.Parse(json);
+                if (doc.RootElement.TryGetProperty("LastProject", out var prop))
+                {
+                    return new AppSettings {LastProject = prop.GetString() ?? ""};
+                }
             }
         }
         catch
@@ -40,10 +44,13 @@ public sealed class AppSettings
         try
         {
             var dir = Path.GetDirectoryName(SettingsPath)!;
-            if (!Directory.Exists(dir))
+            if (dir != null && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(SettingsPath, json);
+            using var stream = File.Create(SettingsPath);
+            using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
+            writer.WriteStartObject();
+            writer.WriteString("LastProject", LastProject);
+            writer.WriteEndObject();
         }
         catch
         {
