@@ -11,8 +11,8 @@ namespace HeaderHero;
 
 public partial class MainWindow : Window
 {
-    string _file;
-    string _last_save;
+    string _curProjectPath;
+    string _lastSaveProjectState;
     Data.Project _project = new();
 
     public MainWindow()
@@ -26,6 +26,8 @@ public partial class MainWindow : Window
         //@TODO
         //projectDirsTextBox.MouseDoubleClick += (_1, _2) => scan_AddDirectory_Click(_1, null);
         //includeDirsTextBox.MouseDoubleClick += (_1, _2) => include_AddDirectory_Click(_1, null);
+
+        _lastSaveProjectState = Sjson.Encode(_project.ToDict());
 
         var settings = AppSettings.Instance;
         var lastProject = settings.LastProject;
@@ -47,22 +49,22 @@ public partial class MainWindow : Window
     {
         _project.ScanDirectories = ProjectDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
         _project.IncludeDirectories = IncludeDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
-        _project.PrecompiledHeader = PchTextBox.Text?.Trim();
+        _project.PrecompiledHeader = PchTextBox.Text?.Trim() ?? "";
     }
 
     void MarkSave()
     {
-        if (_file != null)
-            this.Title = "Header Hero - " + _file;
+        if (_curProjectPath != null)
+            this.Title = "Header Hero - " + _curProjectPath;
         else
             this.Title = "Header Hero";
-        _last_save = Sjson.Encode(_project.ToDict());
+        _lastSaveProjectState = Sjson.Encode(_project.ToDict());
     }
 
     async Task<bool> AskSaveProject()
     {
         ParseProject();
-        if (_last_save == Sjson.Encode(_project.ToDict()))
+        if (_lastSaveProjectState == Sjson.Encode(_project.ToDict()))
             return true;
 
         int choice = await new MessageBox3("Save Project?", "Project was modified, save changes?", new[]{"Save", "Do not save", "Cancel"}).ShowDialog<int>(this);
@@ -80,7 +82,9 @@ public partial class MainWindow : Window
         if (!await AskSaveProject())
             return;
 
-        _file = null;
+        AppSettings.Instance.LastProject = string.Empty;
+        AppSettings.Instance.Save();
+        _curProjectPath = null;
         _project = new Data.Project();
         DisplayProject();
         MarkSave();
@@ -116,9 +120,8 @@ public partial class MainWindow : Window
 
     void Open(string path)
     {
-        _file = path;
+        _curProjectPath = path;
         _project = new Data.Project();
-        var sjsondata = Sjson.Load(path);
         _project.FromDict(Sjson.Load(path));
         MarkSave();
         DisplayProject();
@@ -126,7 +129,7 @@ public partial class MainWindow : Window
 
     async void SaveProject(bool force_save_as)
     {
-        if (_file == null || force_save_as)
+        if (_curProjectPath == null || force_save_as)
         {
             var dlg = new SaveFileDialog
             {
@@ -135,16 +138,16 @@ public partial class MainWindow : Window
             var chosen = await dlg.ShowAsync(this);
             if (chosen == null)
                 return;
-            _file = chosen;
+            _curProjectPath = chosen;
         }
 
-        if (_file == null)
+        if (_curProjectPath == null)
             return;
 
-        AppSettings.Instance.LastProject = _file;
+        AppSettings.Instance.LastProject = _curProjectPath;
         AppSettings.Instance.Save();
         ParseProject();
-        Sjson.Save(_project.ToDict(), _file);
+        Sjson.Save(_project.ToDict(), _curProjectPath);
         MarkSave();
     }
 
