@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Threading;
 using HeaderHero.Serialization;
 
@@ -160,6 +161,7 @@ public partial class MainWindow : Window
 
     async void ScanProject()
     {
+        _project.Clean();
         ParseProject();
         var scanner = new Parser.Scanner(_project);
 
@@ -193,12 +195,6 @@ public partial class MainWindow : Window
         report.Show();
     }
 
-    void ClearRescanProject()
-    {
-        _project.Clean();
-        ScanProject();
-    }
-
     void Menu_NewProject(object sender, EventArgs e)
     {
         NewProject();
@@ -223,13 +219,8 @@ public partial class MainWindow : Window
         Close();
     }
 
-    void Menu_Scan(object sender, EventArgs e)
+    void Button_Scan(object sender, RoutedEventArgs e)
     {
         ScanProject();
-    }
-
-    void Menu_Rescan(object sender, EventArgs e)
-    {
-        ClearRescanProject();
     }
 }
