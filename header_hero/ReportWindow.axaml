@@ -38,15 +38,14 @@
     </Window.Resources>
     <TabControl x:Name="Tabs" Margin="8">
         <TabItem Header="Report">
-            <Grid RowDefinitions="Auto,Auto,Auto,3*,Auto,3*,Auto,*" Margin="4">
-                <TextBlock Grid.Row="0" Text="Report" FontWeight="Bold" />
-                <TextBox Grid.Row="1" x:Name="SummaryText" FontFamily="Consolas,Monospace" TextWrapping="NoWrap" IsReadOnly="True"/>
-                <TextBlock Grid.Row="2" Text="Biggest contributors:" Margin="0,10,0,0" />
-                <ListBox Grid.Row="3" x:Name="BiggestList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
-                <TextBlock Grid.Row="4" Text="Header Hubs:" Margin="0,10,0,0" />
-                <ListBox Grid.Row="5" x:Name="HeaderHubsList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
-                <TextBlock Grid.Row="6" Text="Precompiled Headers:" Margin="0,10,0,0" />
-                <ListBox Grid.Row="7" x:Name="PrecompiledHeadersList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+            <Grid RowDefinitions="Auto,Auto,3*,Auto,3*,Auto,*" Margin="4">
+                <TextBox Grid.Row="0" x:Name="SummaryText" FontFamily="Consolas,Monospace" TextWrapping="NoWrap" IsReadOnly="True"/>
+                <TextBlock Grid.Row="1" Text="Biggest contributors:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="2" x:Name="BiggestList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+                <TextBlock Grid.Row="3" Text="Header Hubs:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="4" x:Name="HeaderHubsList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+                <TextBlock Grid.Row="5" Text="Precompiled Headers:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="6" x:Name="PrecompiledHeadersList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
             </Grid>
         </TabItem>
         <TabItem Header="Includes">

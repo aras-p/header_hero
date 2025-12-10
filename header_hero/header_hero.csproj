@@ -7,6 +7,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>HeaderHero</AssemblyName>
         <RootNamespace>HeaderHero</RootNamespace>
+        <ApplicationIcon>AppIcon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,5 +23,10 @@
         <Compile Remove="Properties/**" />
         <Compile Remove="MacOS/**" />
         <Compile Remove="Windows/**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="AppIcon.ico" />
+      <Resource Include="AppIcon.ico" />
     </ItemGroup>
 </Project>
