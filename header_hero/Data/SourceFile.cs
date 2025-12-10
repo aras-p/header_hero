@@ -11,7 +11,7 @@ public class SourceFile
 	public bool Touched { get; set; }
 	public bool Precompiled { get; set; }
 
-	static public bool IsTranslationUnitExtension(string ext)
+	public static bool IsTranslationUnitExtension(string ext)
 	{
 		return ext is ".cpp" or ".c" or ".cc" or ".cxx" or ".mm" or ".m";
 	}

@@ -23,19 +23,22 @@
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>
-    </NativeMenu.Menu>    
-    <Grid Margin="12" ColumnDefinitions="100,*" RowDefinitions="Auto,*,*,Auto" RowSpacing="8" ColumnSpacing="8">
+    </NativeMenu.Menu>
+    <DockPanel>
+        <NativeMenuBar DockPanel.Dock="Top" x:Name="MenuBar" />
+        <Grid Margin="12" ColumnDefinitions="100,*" RowDefinitions="Auto,*,*,Auto" RowSpacing="8" ColumnSpacing="8">
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Last scan:"/>
-        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="LastScanLabel" Text="(never scanned)" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Last scan:"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="LastScanLabel" Text="(never scanned)" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Project dirs:"/>
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="ProjectDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Project dirs:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="ProjectDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Include dirs:"/>
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="IncludeDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Include dirs:"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="IncludeDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Precomp. header:"/>
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="PchTextBox" VerticalAlignment="Center"/>
-    </Grid>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Precomp. header:"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="PchTextBox" VerticalAlignment="Center"/>
+        </Grid>
+    </DockPanel>
 </Window>

@@ -16,6 +16,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        if (OperatingSystem.IsMacOS())
+            MenuBar.IsVisible = false;
+
         this.Closing += OnWindowClosing;
 
         //@TODO
