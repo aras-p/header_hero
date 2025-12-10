@@ -74,10 +74,10 @@ static class Parser
         }
     }
 
-    public static Result ParseFile(FileInfo fi, ConcurrentQueue<string> errors)
+    public static Result ParseFile(string fullPath, ConcurrentQueue<string> errors)
     {
         Result res = new Result();
-        string[] lines = File.ReadAllLines(fi.FullName, Encoding.UTF8);
+        string[] lines = File.ReadAllLines(fullPath, Encoding.UTF8);
         res.Lines = lines.Length;
         foreach (string line in lines)
         {
@@ -85,7 +85,7 @@ static class Parser
             {
                 ParseResult r = ParseLine(line, res);
                 if (r == ParseResult.Error)
-                    errors.Enqueue("Could not parse line: " + line + " in file: " + fi.FullName);
+                    errors.Enqueue("Could not parse line: " + line + " in file: " + fullPath);
             }
         }
         return res;

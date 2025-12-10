@@ -20,8 +20,9 @@ public class Scanner
 {
     readonly Project _project;
     readonly ConcurrentDictionary<string, byte> _queued;
-    readonly ConcurrentQueue<FileInfo> _scan_queue;
+    readonly ConcurrentQueue<string> _scan_queue;
     readonly ConcurrentDictionary<string, string> _system_includes;
+    readonly ConcurrentDictionary<string, bool> _file_existence;
     bool _scanning_pch;
     bool CaseSensitive { get; }
 
@@ -35,6 +36,7 @@ public class Scanner
         _queued = [];
         _scan_queue = [];
         _system_includes = [];
+        _file_existence = [];
 
         Errors = [];
         NotFound = [];
@@ -58,6 +60,7 @@ public class Scanner
     public void Rescan(ProgressFeedback feedback)
     {
         Stopwatch sw = Stopwatch.StartNew();
+        _file_existence.Clear();
         feedback.Title = "Scanning precompiled header...";
         foreach (var sf in _project.Files.Values)
         {
@@ -67,15 +70,15 @@ public class Scanner
 
         // scan everything that goes into precompiled header
         _scanning_pch = true;
-        if (!string.IsNullOrEmpty(_project.PrecompiledHeader) && File.Exists(_project.PrecompiledHeader))
+        if (!string.IsNullOrEmpty(_project.PrecompiledHeader) && FileExists(_project.PrecompiledHeader))
         {
-            var inc = new FileInfo(_project.PrecompiledHeader);
+            var inc = Path.GetFullPath(_project.PrecompiledHeader);
             ScanFile(inc);
             while (!_scan_queue.IsEmpty)
             {
-                FileInfo[] to_scan = _scan_queue.ToArray();
+                string[] to_scan = _scan_queue.ToArray();
                 _scan_queue.Clear();
-                foreach (FileInfo fi in to_scan)
+                foreach (string fi in to_scan)
                 {
                     ScanFile(fi);
                 }
@@ -98,13 +101,13 @@ public class Scanner
         while (_scan_queue.Count > 0)
         {
             dequeued += _scan_queue.Count;
-            FileInfo[] to_scan = _scan_queue.ToArray();
+            string[] to_scan = _scan_queue.ToArray();
             _scan_queue.Clear();
-            foreach (FileInfo fi in to_scan)
+            foreach (string fi in to_scan)
             {
                 feedback.Count = dequeued + _scan_queue.Count;
                 feedback.Item++;
-                feedback.Message = fi.Name;
+                feedback.Message = Path.GetFileName(fi);
                 ScanFile(fi);
             }
         }
@@ -138,29 +141,46 @@ public class Scanner
         foreach (FileInfo file in files)
         {
             if (SourceFile.IsTranslationUnitExtension(file.Extension))
-                Enqueue(file, CanonicalPath(file));
+            {
+                string fullPath = file.FullName;
+                Enqueue(fullPath, CanonicalPath(fullPath));
+            }
         }
         foreach (DirectoryInfo subdir in subdirs)
             if (!subdir.Name.StartsWith('.'))
                 ScanDirectory(subdir, feedback);
     }
 
-    string CanonicalPath(FileInfo fi)
+    // On a case-insensitive file system, this returns
+    // path that is all lowercase
+    string CanonicalPath(string path)
     {
-        return CaseSensitive ? fi.FullName : fi.FullName.ToLowerInvariant();
+        return CaseSensitive ? path : path.ToLowerInvariant();
     }
 
-    void Enqueue(FileInfo inc, string abs)
+    bool FileExists(string path)
+    {
+        if (_file_existence.TryGetValue(path, out var value))
+        {
+            return value;
+        }
+
+        value = File.Exists(path);
+        _file_existence.TryAdd(path, value);
+        return value;
+    }
+
+    void Enqueue(string fullPath, string abs)
     {
         if (_queued.TryAdd(abs, 0))
         {
-            _scan_queue.Enqueue(inc);
+            _scan_queue.Enqueue(fullPath);
         }
     }
 
-    void ScanFile(FileInfo fi)
+    void ScanFile(string path)
     {
-        string path = CanonicalPath(fi);
+        path = CanonicalPath(path);
         SourceFile sf;
         if (_project.Files.ContainsKey(path) && !_scanning_pch)
         {
@@ -168,7 +188,7 @@ public class Scanner
         }
         else
         {
-            Parser.Result res = Parser.ParseFile(fi, Errors);
+            Parser.Result res = Parser.ParseFile(path, Errors);
             sf = new SourceFile
             {
                 Lines = res.Lines,
@@ -186,7 +206,7 @@ public class Scanner
         foreach (string s in sf.LocalIncludes) {
             try
             {
-                FileInfo inc = new FileInfo(Path.Combine(local_dir, s));
+                string inc = Path.GetFullPath(Path.Combine(local_dir, s));
                 string abs = CanonicalPath(inc);
                 // found a header that's part of PCH during regular scan: ignore it
                 if (!_scanning_pch && _project.Files.TryGetValue(abs, out SourceFile value) && value.Precompiled)
@@ -194,7 +214,7 @@ public class Scanner
                     value.Touched = true;
                     continue;
                 }
-                if (!inc.Exists)
+                if (!FileExists(inc))
                 {
                     if (!sf.SystemIncludes.Contains(s))
                         sf.SystemIncludes.Add(s);
@@ -226,12 +246,12 @@ public class Scanner
                 }
                 else
                 {
-                    FileInfo found = null;
+                    string found = null;
 
                     foreach (string dir in _project.IncludeDirectories)
                     {
-                        found = new FileInfo(Path.Combine(dir, s));
-                        if (found.Exists)
+                        found = Path.GetFullPath(Path.Combine(dir, s));
+                        if (FileExists(found))
                             break;
                         found = null;
                     }
