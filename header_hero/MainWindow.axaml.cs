@@ -36,7 +36,6 @@ public partial class MainWindow : Window
 
     void DisplayProject()
     {
-        LastScanLabel.Text = _project.LastScan.ToString();
         ProjectDirsTextBox.Text = string.Join("\r\n", _project.ScanDirectories.ToArray());
         IncludeDirsTextBox.Text = string.Join("\r\n", _project.IncludeDirectories.ToArray());
         PchTextBox.Text = _project.PrecompiledHeader ?? string.Empty;
@@ -55,13 +54,13 @@ public partial class MainWindow : Window
             this.Title = "Header Hero - " + _file;
         else
             this.Title = "Header Hero";
-        _last_save = Sjson.Encode(JsonSerializer.Save(_project));
+        _last_save = Sjson.Encode(_project.ToDict());
     }
 
     bool CheckSave()
     {
         ParseProject();
-        if (_last_save == Sjson.Encode(JsonSerializer.Save(_project)))
+        if (_last_save == Sjson.Encode(_project.ToDict()))
             return true;
         SaveProject();
         return true;
@@ -73,7 +72,7 @@ public partial class MainWindow : Window
             return;
 
         _file = null;
-        _project = new HeaderHero.Data.Project();
+        _project = new Data.Project();
         DisplayProject();
         MarkSave();
     }
@@ -109,8 +108,9 @@ public partial class MainWindow : Window
     void Open(string path)
     {
         _file = path;
-        _project = new HeaderHero.Data.Project();
-        JsonSerializer.Load(_project, Sjson.Load(path));
+        _project = new Data.Project();
+        var sjsondata = Sjson.Load(path);
+        _project.FromDict(Sjson.Load(path));
         MarkSave();
         DisplayProject();
     }
@@ -135,7 +135,7 @@ public partial class MainWindow : Window
         AppSettings.Instance.LastProject = _file;
         AppSettings.Instance.Save();
         ParseProject();
-        Sjson.Save(JsonSerializer.Save(_project), _file);
+        Sjson.Save(_project.ToDict(), _file);
         MarkSave();
     }
 
@@ -150,7 +150,7 @@ public partial class MainWindow : Window
         ParseProject();
         var scanner = new Parser.Scanner(_project);
 
-        DateTime started = DateTime.Now;
+        //DateTime started = DateTime.Now;
 
         ProgressDialog dlg = new ProgressDialog();
         dlg.Start(async (fb) =>
@@ -174,7 +174,6 @@ public partial class MainWindow : Window
 
         await dlg.ShowDialog(this);
 
-        _project.LastScan = started;
         DisplayProject();
 
         ReportWindow report = new ReportWindow(_project, scanner);

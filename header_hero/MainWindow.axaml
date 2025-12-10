@@ -8,7 +8,7 @@
         <NativeMenu>
             <NativeMenuItem Header="_File">
                 <NativeMenu>
-                    <NativeMenuItem Header="_Open Project..." Click="Menu_NewProject"/>
+                    <NativeMenuItem Header="_New Project..." Click="Menu_NewProject"/>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="_Open Project..." Click="Menu_OpenProject"/>
                     <NativeMenuItem Header="_Save Project..." Click="Menu_SaveProject"/>
@@ -26,19 +26,15 @@
     </NativeMenu.Menu>
     <DockPanel>
         <NativeMenuBar DockPanel.Dock="Top" x:Name="MenuBar" />
-        <Grid Margin="12" ColumnDefinitions="100,*" RowDefinitions="Auto,*,*,Auto" RowSpacing="8" ColumnSpacing="8">
+        <Grid Margin="12" ColumnDefinitions="100,*" RowDefinitions="3*,3*,*" RowSpacing="8" ColumnSpacing="8">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Project dirs:"/>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="ProjectDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Last scan:"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="LastScanLabel" Text="(never scanned)" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Include dirs:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="IncludeDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Project dirs:"/>
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="ProjectDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
-
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Include dirs:"/>
-            <TextBox Grid.Row="2" Grid.Column="1" x:Name="IncludeDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
-
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Precomp. header:"/>
-            <TextBox Grid.Row="3" Grid.Column="1" x:Name="PchTextBox" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Precomp. header:"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="PchTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
         </Grid>
     </DockPanel>
 </Window>

@@ -157,7 +157,7 @@ public class Scanner
     {
         string path = CanonicalPath(fi);
         SourceFile sf;
-        if (_project.Files.ContainsKey(path) && _project.LastScan > fi.LastWriteTime && !_scanning_pch)
+        if (_project.Files.ContainsKey(path) && !_scanning_pch)
         {
             sf = _project.Files[path];
         }
