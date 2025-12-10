@@ -15,6 +15,7 @@
         <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.9" />
         <PackageReference Include="Avalonia.Desktop" Version="11.3.9"/>
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.9"/>
+        <PackageReference Include="Avalonia.Native" Version="11.3.9" />
         <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.9" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Include="Avalonia.Diagnostics" Version="11.3.9">

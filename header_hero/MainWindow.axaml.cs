@@ -16,13 +16,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        NewProjectMenu.Click += (_, _) => NewProject();
-        OpenProjectMenu.Click += (_, _) => OpenProject();
-        SaveProjectMenu.Click += (_, _) => SaveProject();
-        CloseProjectMenu.Click += (_, _) => NewProject();
-        ScanMenu.Click += (_, _) => ScanProject();
-        CleanRescanMenu.Click += (_, _) => ClearRescanProject();
-        QuitMenu.Click += (_, _) => this.Close();
         this.Closing += OnWindowClosing;
 
         //@TODO
@@ -189,5 +182,30 @@ public partial class MainWindow : Window
     {
         _project.Clean();
         ScanProject();
+    }
+
+    private void Menu_NewProject(object sender, EventArgs e)
+    {
+        NewProject();
+    }
+    private void Menu_OpenProject(object sender, EventArgs e)
+    {
+        OpenProject();
+    }
+    private void Menu_SaveProject(object sender, EventArgs e)
+    {
+        SaveProject();
+    }
+    private void Menu_Quit(object sender, EventArgs e)
+    {
+        Close();
+    }
+    private void Menu_Scan(object sender, EventArgs e)
+    {
+        ScanProject();
+    }
+    private void Menu_Rescan(object sender, EventArgs e)
+    {
+        ClearRescanProject();
     }
 }
