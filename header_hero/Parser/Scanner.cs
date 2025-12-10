@@ -19,20 +19,28 @@ public class ProgressFeedback
 public class Scanner
 {
     readonly Project _project;
-    readonly ConcurrentDictionary<string, byte> _queued;
-    readonly ConcurrentQueue<string> _scan_queue;
-    readonly ConcurrentDictionary<string, string> _system_includes;
-    readonly ConcurrentDictionary<string, bool> _file_existence;
+    ConcurrentDictionary<string, byte> _queued;
+    ConcurrentQueue<string> _scan_queue;
+    ConcurrentDictionary<string, string> _system_includes;
+    ConcurrentDictionary<string, bool> _file_existence;
     bool _scanning_pch;
     bool CaseSensitive { get; }
 
-    public readonly ConcurrentQueue<string> Errors;
-    public readonly ConcurrentDictionary<string, byte> NotFound;
-    public readonly ConcurrentDictionary<string, string> NotFoundOrigins;
+    public ConcurrentQueue<string> Errors;
+    public ConcurrentDictionary<string, byte> NotFound;
+    public ConcurrentDictionary<string, string> NotFoundOrigins;
 
     public Scanner(Project p)
     {
         _project = p;
+        CaseSensitive = IsCaseSensitive();
+        Clear();
+    }
+
+    void Clear()
+    {
+        _project.Files.Clear();
+
         _queued = [];
         _scan_queue = [];
         _system_includes = [];
@@ -41,8 +49,6 @@ public class Scanner
         Errors = [];
         NotFound = [];
         NotFoundOrigins = [];
-
-        CaseSensitive = IsCaseSensitive();
     }
 
     bool IsCaseSensitive()
@@ -60,13 +66,10 @@ public class Scanner
     public void Rescan(ProgressFeedback feedback)
     {
         Stopwatch sw = Stopwatch.StartNew();
-        _file_existence.Clear();
+
+        Clear();
+
         feedback.Title = "Scanning precompiled header...";
-        foreach (var sf in _project.Files.Values)
-        {
-            sf.Touched = false;
-            sf.Precompiled = false;
-        }
 
         // scan everything that goes into precompiled header
         _scanning_pch = true;
@@ -113,9 +116,6 @@ public class Scanner
         }
         _queued.Clear();
         _system_includes.Clear();
-
-        foreach (var it in _project.Files.Where(kvp => !kvp.Value.Touched).ToList())
-            _project.Files.Remove(it.Key);
 
         _project.ScanTime = sw.Elapsed;
     }
@@ -199,7 +199,6 @@ public class Scanner
             _project.Files[path] = sf;
         }
 
-        sf.Touched = true;
         sf.AbsoluteIncludes.Clear();
 
         string local_dir = Path.GetDirectoryName(path) ?? string.Empty;
@@ -211,7 +210,6 @@ public class Scanner
                 // found a header that's part of PCH during regular scan: ignore it
                 if (!_scanning_pch && _project.Files.TryGetValue(abs, out SourceFile value) && value.Precompiled)
                 {
-                    value.Touched = true;
                     continue;
                 }
                 if (!FileExists(inc))
@@ -239,7 +237,6 @@ public class Scanner
                     // found a header that's part of PCH during regular scan: ignore it
                     if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
                     {
-                        _project.Files[abs].Touched = true;
                         continue;
                     }
                     sf.AbsoluteIncludes.Add(abs);
@@ -262,7 +259,6 @@ public class Scanner
                         // found a header that's part of PCH during regular scan: ignore it
                         if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
                         {
-                            _project.Files[abs].Touched = true;
                             continue;
                         }
 

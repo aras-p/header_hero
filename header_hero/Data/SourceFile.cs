@@ -8,7 +8,6 @@ public class SourceFile
 	public List<string> SystemIncludes { get; set; } = [];
 	public List<string> AbsoluteIncludes { get; set; } = [];
 	public int Lines { get; set; }
-	public bool Touched { get; set; }
 	public bool Precompiled { get; set; }
 
 	public static bool IsTranslationUnitExtension(string ext)

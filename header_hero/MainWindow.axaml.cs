@@ -161,11 +161,8 @@ public partial class MainWindow : Window
 
     async void ScanProject()
     {
-        _project.Clean();
         ParseProject();
         var scanner = new Parser.Scanner(_project);
-
-        //DateTime started = DateTime.Now;
 
         ProgressDialog dlg = new ProgressDialog();
         dlg.Start(async (fb) =>
