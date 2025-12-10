@@ -4,11 +4,11 @@ namespace HeaderHero.Data;
 
 public class SourceFile
 {
-	public List<string> LocalIncludes { get; set; } = [];
-	public List<string> SystemIncludes { get; set; } = [];
+	public List<string> LocalIncludes { get; init; } = [];
+	public List<string> SystemIncludes { get; init; } = [];
 	public List<string> AbsoluteIncludes { get; set; } = [];
-	public int Lines { get; set; }
-	public bool Precompiled { get; set; }
+	public int Lines { get; init; }
+	public bool Precompiled { get; init; }
 
 	public static bool IsTranslationUnitExtension(string ext)
 	{

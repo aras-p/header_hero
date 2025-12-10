@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using HeaderHero.Data;
 
 namespace HeaderHero.Parser;
@@ -20,7 +22,9 @@ public class Scanner
 {
     readonly Project _project;
     ConcurrentDictionary<string, byte> _queued;
-    ConcurrentQueue<string> _scan_queue;
+
+    ConcurrentDictionary<string, byte> _nextPass;
+
     ConcurrentDictionary<string, string> _system_includes;
     ConcurrentDictionary<string, bool> _file_existence;
     bool _scanning_pch;
@@ -42,7 +46,7 @@ public class Scanner
         _project.Files.Clear();
 
         _queued = [];
-        _scan_queue = [];
+        _nextPass = [];
         _system_includes = [];
         _file_existence = [];
 
@@ -68,6 +72,7 @@ public class Scanner
         Stopwatch sw = Stopwatch.StartNew();
 
         Clear();
+        string[] currentPass = null;
 
         feedback.Title = "Scanning precompiled header...";
 
@@ -77,14 +82,15 @@ public class Scanner
         {
             var inc = Path.GetFullPath(_project.PrecompiledHeader);
             ScanFile(inc);
-            while (!_scan_queue.IsEmpty)
+
+            currentPass = _nextPass.Keys.ToArray();
+            _nextPass = [];
+            while (currentPass.Length > 0)
             {
-                string[] to_scan = _scan_queue.ToArray();
-                _scan_queue.Clear();
-                foreach (string fi in to_scan)
-                {
-                    ScanFile(fi);
-                }
+                foreach (string path in currentPass)
+                    ScanFile(path);
+                currentPass = _nextPass.Keys.ToArray();
+                _nextPass = [];
             }
             _queued.Clear();
         }
@@ -99,21 +105,31 @@ public class Scanner
 
         feedback.Title = "Scanning files...";
 
-        int dequeued = 0;
+        ParallelOptions parOptions = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 4) };
 
-        while (_scan_queue.Count > 0)
+        currentPass = _nextPass.Keys.ToArray();
+        _nextPass = [];
+        int processedCounter = 0;
+        while (currentPass.Length > 0)
         {
-            dequeued += _scan_queue.Count;
-            string[] to_scan = _scan_queue.ToArray();
-            _scan_queue.Clear();
-            foreach (string fi in to_scan)
+            Parallel.ForEach(currentPass, parOptions, path =>
             {
-                feedback.Count = dequeued + _scan_queue.Count;
-                feedback.Item++;
-                feedback.Message = Path.GetFileName(fi);
-                ScanFile(fi);
-            }
+                int current = Interlocked.Increment(ref processedCounter);
+                if ((current & 255) == 0)
+                {
+                    lock (feedback)
+                    {
+                        feedback.Item = current;
+                        feedback.Count = _queued.Count;
+                        feedback.Message = Path.GetFileName(path);
+                    }
+                }
+                ScanFile(path);
+            });
+            currentPass = _nextPass.Keys.ToArray();
+            _nextPass = [];
         }
+
         _queued.Clear();
         _system_includes.Clear();
 
@@ -174,30 +190,29 @@ public class Scanner
     {
         if (_queued.TryAdd(abs, 0))
         {
-            _scan_queue.Enqueue(fullPath);
+            _nextPass.TryAdd(fullPath, 0);
         }
+    }
+
+    bool ContainsPrecompiledPath(string abs)
+    {
+        return _project.Files.TryGetValue(abs, out var f) && f.Precompiled;
     }
 
     void ScanFile(string path)
     {
         path = CanonicalPath(path);
-        SourceFile sf;
         if (_project.Files.ContainsKey(path) && !_scanning_pch)
+            return;
+        Parser.Result res = Parser.ParseFile(path, Errors);
+        var sf = new SourceFile
         {
-            sf = _project.Files[path];
-        }
-        else
-        {
-            Parser.Result res = Parser.ParseFile(path, Errors);
-            sf = new SourceFile
-            {
-                Lines = res.Lines,
-                LocalIncludes = res.LocalIncludes,
-                SystemIncludes = res.SystemIncludes,
-                Precompiled = _scanning_pch
-            };
-            _project.Files[path] = sf;
-        }
+            Lines = res.Lines,
+            LocalIncludes = res.LocalIncludes,
+            SystemIncludes = res.SystemIncludes,
+            Precompiled = _scanning_pch
+        };
+        _project.Files.AddOrUpdate(path, sf, (_, __) => sf);
 
         sf.AbsoluteIncludes.Clear();
 
@@ -208,7 +223,7 @@ public class Scanner
                 string inc = Path.GetFullPath(Path.Combine(local_dir, s));
                 string abs = CanonicalPath(inc);
                 // found a header that's part of PCH during regular scan: ignore it
-                if (!_scanning_pch && _project.Files.TryGetValue(abs, out SourceFile value) && value.Precompiled)
+                if (!_scanning_pch && ContainsPrecompiledPath(abs))
                 {
                     continue;
                 }
@@ -231,15 +246,14 @@ public class Scanner
         {
             try
             {
-                if (_system_includes.ContainsKey(s))
+                if (_system_includes.TryGetValue(s, out var sysIncPath))
                 {
-                    string abs = _system_includes[s];
                     // found a header that's part of PCH during regular scan: ignore it
-                    if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                    if (!_scanning_pch && ContainsPrecompiledPath(sysIncPath))
                     {
                         continue;
                     }
-                    sf.AbsoluteIncludes.Add(abs);
+                    sf.AbsoluteIncludes.Add(sysIncPath);
                 }
                 else
                 {
@@ -257,13 +271,13 @@ public class Scanner
                     {
                         string abs = CanonicalPath(found);
                         // found a header that's part of PCH during regular scan: ignore it
-                        if (!_scanning_pch && _project.Files.ContainsKey(abs) && _project.Files[abs].Precompiled)
+                        if (!_scanning_pch && ContainsPrecompiledPath(abs))
                         {
                             continue;
                         }
 
                         sf.AbsoluteIncludes.Add(abs);
-                        _system_includes[s] = abs;
+                        _system_includes.TryAdd(s, abs);
                         Enqueue(found, abs);
                     }
                     else
