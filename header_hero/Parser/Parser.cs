@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,7 +74,7 @@ static class Parser
         }
     }
 
-    public static Result ParseFile(FileInfo fi, List<string> errors)
+    public static Result ParseFile(FileInfo fi, ConcurrentQueue<string> errors)
     {
         Result res = new Result();
         string[] lines = File.ReadAllLines(fi.FullName, Encoding.UTF8);
@@ -84,7 +85,7 @@ static class Parser
             {
                 ParseResult r = ParseLine(line, res);
                 if (r == ParseResult.Error)
-                    errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
+                    errors.Enqueue("Could not parse line: " + line + " in file: " + fi.FullName);
             }
         }
         return res;

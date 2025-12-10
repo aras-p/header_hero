@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,26 +19,26 @@ public class ProgressFeedback
 public class Scanner
 {
     readonly Project _project;
-    readonly HashSet<string> _queued;
-    readonly List<FileInfo> _scan_queue;
-    readonly Dictionary<string, string> _system_includes;
+    readonly ConcurrentDictionary<string, byte> _queued;
+    readonly ConcurrentQueue<FileInfo> _scan_queue;
+    readonly ConcurrentDictionary<string, string> _system_includes;
     bool _scanning_pch;
     bool CaseSensitive { get; }
 
-    public readonly List<string> Errors;
-    public readonly HashSet<string> NotFound;
-    public readonly Dictionary<string, string> NotFoundOrigins;
+    public readonly ConcurrentQueue<string> Errors;
+    public readonly ConcurrentDictionary<string, byte> NotFound;
+    public readonly ConcurrentDictionary<string, string> NotFoundOrigins;
 
     public Scanner(Project p)
     {
         _project = p;
         _queued = [];
         _scan_queue = [];
-        _system_includes = new Dictionary<string, string>();
+        _system_includes = [];
 
         Errors = [];
         NotFound = [];
-        NotFoundOrigins = new Dictionary<string, string>();
+        NotFoundOrigins = [];
 
         CaseSensitive = IsCaseSensitive();
     }
@@ -70,7 +71,7 @@ public class Scanner
         {
             var inc = new FileInfo(_project.PrecompiledHeader);
             ScanFile(inc);
-            while (_scan_queue.Count > 0)
+            while (!_scan_queue.IsEmpty)
             {
                 FileInfo[] to_scan = _scan_queue.ToArray();
                 _scan_queue.Clear();
@@ -130,7 +131,7 @@ public class Scanner
         }
         catch (Exception e)
         {
-            Errors.Add($"Cannot descend into {di.FullName}: {e.Message}");
+            Errors.Enqueue($"Cannot descend into {di.FullName}: {e.Message}");
             return;
         }
 
@@ -151,9 +152,9 @@ public class Scanner
 
     void Enqueue(FileInfo inc, string abs)
     {
-        if (_queued.Add(abs))
+        if (_queued.TryAdd(abs, 0))
         {
-            _scan_queue.Add(inc);
+            _scan_queue.Enqueue(inc);
         }
     }
 
@@ -204,7 +205,7 @@ public class Scanner
             }
             catch (Exception e)
             {
-                Errors.Add($"Exception: \"{e.Message}\" for #include \"{s}\"");
+                Errors.Enqueue($"Exception: \"{e.Message}\" for #include \"{s}\"");
             }
         }
 
@@ -251,16 +252,16 @@ public class Scanner
                     }
                     else
                     {
-                        if (NotFound.Add(s))
+                        if (NotFound.TryAdd(s, 0))
                         {
-                            NotFoundOrigins.Add(s, path);
+                            NotFoundOrigins.TryAdd(s, path);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Errors.Add($"Exception: \"{e.Message}\" for #include <{s}>");
+                Errors.Enqueue($"Exception: \"{e.Message}\" for #include <{s}>");
             }
 
         }
