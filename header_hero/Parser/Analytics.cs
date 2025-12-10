@@ -1,77 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace HeaderHero.Parser
+namespace HeaderHero.Parser;
+
+public class ItemAnalytics
 {
-    public class ItemAnalytics
-    {
-        public HashSet<string> AllIncludes;
-        public int TotalIncludeLines;
-        public HashSet<string> AllIncludedBy;
-		public HashSet<string> TranslationUnitsIncludedBy;
-        public bool Analyzed;
+    public readonly HashSet<string> AllIncludes = [];
+    public int TotalIncludeLines;
+    public readonly HashSet<string> AllIncludedBy = [];
+    public readonly HashSet<string> TranslationUnitsIncludedBy = [];
+    public bool Analyzed;
+}
 
-        public ItemAnalytics()
-        {
-            AllIncludes = new HashSet<string>();
-            TotalIncludeLines = 0;
-            AllIncludedBy = new HashSet<string>();
-			TranslationUnitsIncludedBy = new HashSet<string>();
-            Analyzed = false;
-        }
+public class Analytics
+{
+    public readonly Dictionary<string, ItemAnalytics> Items = new();
+
+    public static Analytics Analyze(Data.Project project)
+    {
+        Analytics analytics = new Analytics();
+        foreach (var kvp in project.Files)
+            analytics.Analyze(kvp.Key, project);
+        return analytics;
     }
 
-    public class Analytics
+    ItemAnalytics Analyze(string path, Data.Project project)
     {
-        public Dictionary<string, ItemAnalytics> Items = new Dictionary<string,ItemAnalytics>();
-
-        static public Analytics Analyze(Data.Project project)
+        if (!Items.TryGetValue(path, out var a))
         {
-            Analytics analytics = new Analytics();
-            foreach (var kvp in project.Files)
-                analytics.Analyze(kvp.Key, project);
-            return analytics;
+            a = new ItemAnalytics();
+            Items.Add(path, a);
         }
-
-        private ItemAnalytics Analyze(string path, Data.Project project)
-        {
-            ItemAnalytics a;
-            if (!Items.TryGetValue(path, out a))
-            {
-                a = new ItemAnalytics();
-                Items.Add(path, a);
-            }
-            if (a.Analyzed)
-                return a;
-            a.Analyzed = true;
-
-            Data.SourceFile sf = project.Files[path];
-            foreach (string include in sf.AbsoluteIncludes)
-            {
-                if (include == path)
-                    continue;
-				
-				bool is_tu = Data.SourceFile.IsTranslationUnitPath(path);
-				
-                ItemAnalytics ai = Analyze(include, project);
-                a.AllIncludes.Add(include);
-                ai.AllIncludedBy.Add(path);
-				if (is_tu)
-					ai.TranslationUnitsIncludedBy.Add (path);
-
-
-                a.AllIncludes.UnionWith(ai.AllIncludes);
-                foreach (string inc in ai.AllIncludes) {
-                    Items[inc].AllIncludedBy.Add(path);
-					if (is_tu)
-						Items[inc].TranslationUnitsIncludedBy.Add (path);
-				}
-            }
-
-            a.TotalIncludeLines = a.AllIncludes.Sum(f => project.Files[f].Lines);
+        if (a.Analyzed)
             return a;
+        a.Analyzed = true;
+
+        Data.SourceFile sf = project.Files[path];
+        foreach (string include in sf.AbsoluteIncludes)
+        {
+            if (include == path)
+                continue;
+
+            bool is_tu = Data.SourceFile.IsTranslationUnitPath(path);
+
+            ItemAnalytics ai = Analyze(include, project);
+            a.AllIncludes.Add(include);
+            ai.AllIncludedBy.Add(path);
+            if (is_tu)
+                ai.TranslationUnitsIncludedBy.Add (path);
+
+
+            a.AllIncludes.UnionWith(ai.AllIncludes);
+            foreach (string inc in ai.AllIncludes) {
+                Items[inc].AllIncludedBy.Add(path);
+                if (is_tu)
+                    Items[inc].TranslationUnitsIncludedBy.Add (path);
+            }
         }
+
+        a.TotalIncludeLines = a.AllIncludes.Sum(f => project.Files[f].Lines);
+        return a;
     }
 }
