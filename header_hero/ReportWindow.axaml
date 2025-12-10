@@ -36,9 +36,9 @@
             </StackPanel>
         </DataTemplate>
     </Window.Resources>
-    <TabControl x:Name="Tabs">
+    <TabControl x:Name="Tabs" Margin="8">
         <TabItem Header="Report">
-            <Grid RowDefinitions="Auto,Auto,Auto,3*,Auto,3*,Auto,*" Margin="12">
+            <Grid RowDefinitions="Auto,Auto,Auto,3*,Auto,3*,Auto,*" Margin="4">
                 <TextBlock Grid.Row="0" Text="Report" FontWeight="Bold" />
                 <TextBox Grid.Row="1" x:Name="SummaryText" FontFamily="Consolas,Monospace" TextWrapping="NoWrap" IsReadOnly="True"/>
                 <TextBlock Grid.Row="2" Text="Biggest contributors:" Margin="0,10,0,0" />
@@ -50,60 +50,14 @@
             </Grid>
         </TabItem>
         <TabItem Header="Includes">
-            <Grid Margin="12"
-                  RowDefinitions="Auto,*"
-                  ColumnDefinitions="*,*,*">
+            <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*,*" Margin="4" ColumnSpacing="4">
 
-                <!-- Top labels -->
-                <StackPanel Grid.Row="0" Grid.Column="0">
-                    <TextBlock Text="Included by:" Margin="0,0,0,2"/>
-                    <Grid ColumnDefinitions="*,70,70">
-                        <TextBlock Grid.Column="0" Text="File"  FontWeight="Bold"/>
-                        <TextBlock Grid.Column="1" Text="Count" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
-                        <TextBlock Grid.Column="2" Text="Lines" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
-                    </Grid>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Included by:"/>
+                <StackPanel Grid.Row="0" Grid.Column="1">
+                    <TextBlock x:Name="CurrentFileLabel" FontWeight="Bold"/>
+                    <Button x:Name="BackButton" HorizontalAlignment="Center" Content="← Back" Width="70" Click="BackButton_OnClick"/>
                 </StackPanel>
-
-                <StackPanel Grid.Row="0" Grid.Column="1"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Center"
-                            Spacing="8">
-                    <Button x:Name="BackButton" Content="← Back" Width="70" Click="BackButton_OnClick"/>
-                    <TextBlock x:Name="CurrentFileLabel"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="0" Grid.Column="2">
-                    <TextBlock Text="Includes:" Margin="0,0,0,2"/>
-                    <Grid ColumnDefinitions="*,70,70">
-                        <TextBlock Grid.Column="0" Text="File"  FontWeight="Bold"/>
-                        <TextBlock Grid.Column="1" Text="Count" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
-                        <TextBlock Grid.Column="2" Text="Lines" FontWeight="Bold" TextAlignment="Right" Margin="12,0,0,0"/>
-                    </Grid>
-                </StackPanel>
-
-                <!-- Bottom row: three panes -->
-                <!-- Left: Included by -->
-                <ListBox x:Name="IncludedByList"
-                         Grid.Row="1" Grid.Column="0" DoubleTapped="IncludedBy_OnDoubleTapped">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="local:IncludeRow">
-                            <Grid ColumnDefinitions="*,70,70" Margin="0,0,0,2">
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Name}" />
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Count}"
-                                           TextAlignment="Right"
-                                           Margin="12,0,0,0"/>
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding Lines}"
-                                           TextAlignment="Right"
-                                           Margin="12,0,0,0"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-                <!-- Middle: file details -->
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Includes:"/>
                 <TextBox x:Name="FileDetailsText"
                          Grid.Row="1" Grid.Column="1"
                          IsReadOnly="True"
@@ -111,27 +65,48 @@
                          AcceptsTab="True"
                          TextWrapping="Wrap"/>
 
-                <!-- Right: Includes -->
-                <ListBox x:Name="IncludesList"
-                         Grid.Row="1" Grid.Column="2" DoubleTapped="Includes_OnDoubleTapped">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="local:IncludeRow">
-                            <Grid ColumnDefinitions="*,70,70" Margin="0,0,0,2">
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Name}" />
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Count}"
-                                           TextAlignment="Right"
-                                           Margin="12,0,0,0"/>
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding Lines}"
-                                           TextAlignment="Right"
-                                           Margin="12,0,0,0"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
+                <DataGrid Grid.Row="1" Grid.Column="0"
+                          x:Name="IncludedByList"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="Column"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          GridLinesVisibility="None"
+                          CanUserResizeColumns="True"
+                          x:DataType="local:IncludeRow"
+                          DoubleTapped="IncludesList_OnDoubleTapped">
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridCell.right-align > TextBlock">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="File" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="60" CellStyleClasses="right-align"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid Grid.Row="1" Grid.Column="2"
+                          x:Name="IncludesList"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="Column"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          GridLinesVisibility="None"
+                          CanUserResizeColumns="True"
+                          x:DataType="local:IncludeRow"
+                          DoubleTapped="IncludesList_OnDoubleTapped">
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridCell.right-align > TextBlock">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="File" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="60" CellStyleClasses="right-align"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
         </TabItem>
         <TabItem Header="Errors">

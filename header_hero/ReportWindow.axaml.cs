@@ -39,16 +39,11 @@ public partial class ReportWindow : Window
         Tabs.SelectedIndex = 1; // we'll build the Includes tab next
     }
 
-    void IncludedBy_OnDoubleTapped(object? sender, TappedEventArgs e)
+    void IncludesList_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (IncludedByList.SelectedItem is IncludeRow row)
-            Inspect(row.FullPath);
-    }
-
-    void Includes_OnDoubleTapped(object? sender, TappedEventArgs e)
-    {
-        if (IncludesList.SelectedItem is IncludeRow row)
-            Inspect(row.FullPath);
+        if (sender is not DataGrid dg) return;
+        if (dg.SelectedItem is not IncludeRow row) return;
+        Inspect(row.FullPath);
     }
 
     void BackButton_OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -79,6 +74,7 @@ public partial class ReportWindow : Window
             var totalLines = analyticsFile.TotalIncludeLines;
             var totalCount = analyticsFile.AllIncludes.Count;
             string text = $"{Path.GetFileName(file)}\r\n\r\nLines: {fileLines}\r\nDirect Includes: {directLines} lines, {directCount} files\r\nTotal Includes: {totalLines} lines, {totalCount} files";
+            CurrentFileLabel.Text = Path.GetFileName(file);
             FileDetailsText.Text = text;
         }
 
