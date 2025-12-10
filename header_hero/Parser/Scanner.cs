@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using HeaderHero.Data;
@@ -55,6 +56,7 @@ public class Scanner
 
     public void Rescan(ProgressFeedback feedback)
     {
+        Stopwatch sw = Stopwatch.StartNew();
         feedback.Title = "Scanning precompiled header...";
         foreach (var sf in _project.Files.Values)
         {
@@ -110,6 +112,8 @@ public class Scanner
 
         foreach (var it in _project.Files.Where(kvp => !kvp.Value.Touched).ToList())
             _project.Files.Remove(it.Key);
+
+        _project.ScanTime = sw.Elapsed;
     }
 
     void ScanDirectory(DirectoryInfo di, ProgressFeedback feedback)

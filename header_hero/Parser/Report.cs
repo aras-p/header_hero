@@ -52,7 +52,7 @@ class Report
         nfi.NumberGroupSeparator = " ";
 
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"Files             {_project.Files.Count.ToString("N0",nfi),valueWidth}");
+        sb.AppendLine($"Files             {_project.Files.Count.ToString("N0",nfi),valueWidth} (scanned in {_project.ScanTime.TotalSeconds:0.0} sec)");
         sb.AppendLine($"Total Lines       {total_lines.ToString("N0",nfi),valueWidth}");
         sb.AppendLine($"Total Precompiled {pch_lines.ToString("N0",nfi),valueWidth}");
         sb.AppendLine($"Total Parsed      {total_parsed.ToString("N0",nfi),valueWidth}");
