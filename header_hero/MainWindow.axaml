@@ -8,10 +8,11 @@
         <NativeMenu>
             <NativeMenuItem Header="_File">
                 <NativeMenu>
-                    <NativeMenuItem Header="_New Project..." Click="Menu_NewProject"/>
+                    <NativeMenuItem Header="_New Project" Click="Menu_NewProject"/>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="_Open Project..." Click="Menu_OpenProject"/>
-                    <NativeMenuItem Header="_Save Project..." Click="Menu_SaveProject"/>
+                    <NativeMenuItem Header="_Save Project" Click="Menu_SaveProject"/>
+                    <NativeMenuItem Header="_Save Project As..." Click="Menu_SaveProjectAs"/>
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="_Quit" Click="Menu_Quit"/>
                 </NativeMenu>

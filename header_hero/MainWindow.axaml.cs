@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using HeaderHero.Serialization;
@@ -11,7 +12,7 @@ public partial class MainWindow : Window
 {
     string _file;
     string _last_save;
-    HeaderHero.Data.Project _project = new();
+    Data.Project _project = new();
 
     public MainWindow()
     {
@@ -57,18 +58,25 @@ public partial class MainWindow : Window
         _last_save = Sjson.Encode(_project.ToDict());
     }
 
-    bool CheckSave()
+    async Task<bool> AskSaveProject()
     {
         ParseProject();
         if (_last_save == Sjson.Encode(_project.ToDict()))
             return true;
-        SaveProject();
+
+        int choice = await new MessageBox3("Save Project?", "Project was modified, save changes?", new[]{"Save", "Do not save", "Cancel"}).ShowDialog<int>(this);
+        switch (choice)
+        {
+            case 0: SaveProject(false); break;
+            case 1: break;
+            case 2: return false;
+        }
         return true;
     }
 
-    void NewProject()
+    async void NewProject()
     {
-        if (!CheckSave())
+        if (!await AskSaveProject())
             return;
 
         _file = null;
@@ -79,7 +87,7 @@ public partial class MainWindow : Window
 
     async void OpenProject()
     {
-        if (!CheckSave())
+        if (!await AskSaveProject())
             return;
 
         var dlg = new OpenFileDialog
@@ -115,9 +123,9 @@ public partial class MainWindow : Window
         DisplayProject();
     }
 
-    async void SaveProject()
+    async void SaveProject(bool force_save_as)
     {
-        if (_file == null)
+        if (_file == null || force_save_as)
         {
             var dlg = new SaveFileDialog
             {
@@ -139,10 +147,15 @@ public partial class MainWindow : Window
         MarkSave();
     }
 
-    void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+    async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (!CheckSave())
-            e.Cancel = true;
+        e.Cancel = true;
+        bool allow = await AskSaveProject();
+        if (allow)
+        {
+            this.Closing -= OnWindowClosing;
+            this.Close();
+        }
     }
 
     async void ScanProject()
@@ -186,27 +199,36 @@ public partial class MainWindow : Window
         ScanProject();
     }
 
-    private void Menu_NewProject(object sender, EventArgs e)
+    void Menu_NewProject(object sender, EventArgs e)
     {
         NewProject();
     }
-    private void Menu_OpenProject(object sender, EventArgs e)
+
+    void Menu_OpenProject(object sender, EventArgs e)
     {
         OpenProject();
     }
-    private void Menu_SaveProject(object sender, EventArgs e)
+
+    void Menu_SaveProject(object sender, EventArgs e)
     {
-        SaveProject();
+        SaveProject(false);
     }
-    private void Menu_Quit(object sender, EventArgs e)
+    void Menu_SaveProjectAs(object sender, EventArgs e)
+    {
+        SaveProject(true);
+    }
+
+    void Menu_Quit(object sender, EventArgs e)
     {
         Close();
     }
-    private void Menu_Scan(object sender, EventArgs e)
+
+    void Menu_Scan(object sender, EventArgs e)
     {
         ScanProject();
     }
-    private void Menu_Rescan(object sender, EventArgs e)
+
+    void Menu_Rescan(object sender, EventArgs e)
     {
         ClearRescanProject();
     }

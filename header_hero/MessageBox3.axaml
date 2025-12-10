@@ -1,0 +1,13 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="HeaderHero.MessageBox3"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Title="Message Box">
+        <Grid RowDefinitions="*,Auto" Margin="12" RowSpacing="8">
+                <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+                <StackPanel Grid.Row="1" x:Name="ButtonsPanel" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"/>
+        </Grid>
+</Window>
