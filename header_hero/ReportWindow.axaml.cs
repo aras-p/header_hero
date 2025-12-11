@@ -31,7 +31,7 @@ public partial class ReportWindow : Window
         GetTopLevel(this)!.Cursor = new Cursor(StandardCursorType.Arrow);
     }
 
-    void ReportFileList_OnDoubleTapped(object? sender, TappedEventArgs e)
+    void ReportFileList_OnDoubleTapped(object sender, TappedEventArgs e)
     {
         if (sender is not ListBox lb) return;
         if (lb.SelectedItem is not ReportFile rf) return;
@@ -39,14 +39,14 @@ public partial class ReportWindow : Window
         Tabs.SelectedIndex = 1; // we'll build the Includes tab next
     }
 
-    void IncludesList_OnDoubleTapped(object? sender, TappedEventArgs e)
+    void IncludesList_OnDoubleTapped(object sender, TappedEventArgs e)
     {
         if (sender is not DataGrid dg) return;
         if (dg.SelectedItem is not IncludeRow row) return;
         Inspect(row.FullPath);
     }
 
-    void BackButton_OnClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    void BackButton_OnClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (_history.Count > 0)
             _history.RemoveLast();

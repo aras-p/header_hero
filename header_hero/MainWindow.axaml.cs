@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using HeaderHero.Serialization;
 
@@ -11,6 +12,11 @@ namespace HeaderHero;
 
 public partial class MainWindow : Window
 {
+    static readonly FilePickerFileType[] PickerFileTypes =
+    [
+        new("Header Hero") { Patterns = ["*.header_hero"] }
+    ];
+
     string _curProjectPath;
     string _lastSaveProjectState;
     Data.Project _project = new();
@@ -95,24 +101,11 @@ public partial class MainWindow : Window
         if (!await AskSaveProject())
             return;
 
-        var dlg = new OpenFileDialog
-        {
-            AllowMultiple = false,
-            Filters =
-            {
-                new FileDialogFilter
-                {
-                    Name = "Header Hero",
-                    Extensions = { "header_hero" }
-                }
-            }
-        };
-
-        var result = await dlg.ShowAsync(this);
-        if (result == null || result.Length == 0)
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions(){AllowMultiple = false, FileTypeFilter = PickerFileTypes});
+        if (files is not {Count: > 0})
             return;
 
-        var path = result[0];
+        var path = files[0].TryGetLocalPath();
         AppSettings.Instance.LastProject = path;
         AppSettings.Instance.Save();
         Open(path);
@@ -131,14 +124,10 @@ public partial class MainWindow : Window
     {
         if (_curProjectPath == null || force_save_as)
         {
-            var dlg = new SaveFileDialog
-            {
-                Filters = { new FileDialogFilter { Name = "Header Hero", Extensions = { "header_hero" } } }
-            };
-            var chosen = await dlg.ShowAsync(this);
-            if (chosen == null)
+            var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions {SuggestedFileName = _curProjectPath != null ? Path.GetFileName(_curProjectPath) : "project.header_hero", FileTypeChoices = PickerFileTypes});
+            if (result == null)
                 return;
-            _curProjectPath = chosen;
+            _curProjectPath = result.TryGetLocalPath();
         }
 
         if (_curProjectPath == null)
@@ -151,7 +140,7 @@ public partial class MainWindow : Window
         MarkSave();
     }
 
-    async void OnWindowClosing(object? sender, WindowClosingEventArgs e)
+    async void OnWindowClosing(object sender, WindowClosingEventArgs e)
     {
         e.Cancel = true;
         bool allow = await AskSaveProject();

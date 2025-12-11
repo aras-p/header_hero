@@ -10,8 +10,8 @@ namespace HeaderHero;
 
 public partial class ProgressDialog : Window
 {
-    private readonly ProgressFeedback _feedback = new();
-    private Func<ProgressFeedback, Task>? _work;
+    readonly ProgressFeedback _feedback = new();
+    Func<ProgressFeedback, Task> _work;
     public ProgressDialog()
     {
         InitializeComponent();
@@ -22,13 +22,13 @@ public partial class ProgressDialog : Window
         _work = work;
 
         // Show the dialog and then start the work
-        this.Opened += async (_, _) =>
+        Opened += async (_, _) =>
         {
             await RunWorkAsync();
         };
     }
 
-    private async Task RunWorkAsync()
+    async Task RunWorkAsync()
     {
         try
         {
@@ -53,7 +53,7 @@ public partial class ProgressDialog : Window
 
         ProgressReportLabel.Text = $"{_feedback.Item}/{_feedback.Count}";
         MessageLabel.Text = _feedback.Message;
-        this.Title = _feedback.Title;
+        Title = _feedback.Title;
     }
 
     public ProgressFeedback Feedback => _feedback;

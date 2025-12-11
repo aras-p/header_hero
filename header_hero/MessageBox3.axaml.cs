@@ -45,7 +45,7 @@ public partial class MessageBox3 : Window
             Close(cancelIndex);
     }
 
-    void OnKeyDown(object? sender, KeyEventArgs e)
+    void OnKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape)
         {
