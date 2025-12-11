@@ -24,15 +24,24 @@ public static class SystemIncludesLocator
 
     static List<string> FindLinuxIncludes()
     {
+        List<string> res = [];
         string[] common =
         [
             "/usr/include",
             "/usr/local/include",
-            "/usr/include/c++",
             "/usr/include/x86_64-linux-gnu",
             "/usr/lib/gcc"
         ];
-        return common.Where(Directory.Exists).ToList();
+        res.AddRange(common.Where(Directory.Exists));
+
+        string cpp = "/usr/include/c++";
+        if (Directory.Exists(cpp))
+        {
+            var latest = Directory.GetDirectories(cpp).OrderByDescending(Path.GetFileName).FirstOrDefault();
+            if (latest != null)
+                res.Add(latest);
+        }
+        return res;
     }
 
     static List<string> FindMacIncludes()
