@@ -100,11 +100,16 @@ public partial class ReportWindow : Window
         _analytics = Analytics.Analyze(_project);
 
         ErrorsList.ItemsSource = scanner.Errors;
+        if (scanner.Errors.Count > 0)
+            ErrorsTab.Header += $" ({scanner.Errors.Count})";
+
         var notFoundItems = scanner.NotFound
             .OrderBy(s => s)
             .Select(s => new MissingFilesRow(s, _scanner.NotFoundOrigins[s]))
             .ToList();
         MissingFilesList.ItemsSource = notFoundItems;
+        if (notFoundItems.Count > 0)
+            MissingTab.Header += $" ({notFoundItems.Count})";
 
         Report rpt = new Report(_project, _analytics);
         SummaryText.Text = rpt.summary;

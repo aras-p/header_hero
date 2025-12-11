@@ -15,6 +15,8 @@ public class ProgressFeedback
     public string Message = "";
 }
 
+public record ScanError(string Message, string Path);
+
 public class Scanner
 {
     readonly Project _project;
@@ -27,7 +29,7 @@ public class Scanner
     bool _scanning_pch;
     bool CaseSensitive { get; }
 
-    public List<string> Errors;
+    public List<ScanError> Errors;
     public HashSet<string> NotFound;
     public Dictionary<string, string> NotFoundOrigins;
 
@@ -148,7 +150,7 @@ public class Scanner
         }
         catch (Exception e)
         {
-            Errors.Add($"Cannot descend into {di.FullName}: {e.Message}");
+            Errors.Add(new ScanError($"Failed to scan folder: {e.Message}", di.FullName));
             return;
         }
 
@@ -239,7 +241,8 @@ public class Scanner
         sf.AbsoluteIncludes.Clear();
 
         string local_dir = Path.GetDirectoryName(path) ?? string.Empty;
-        foreach (string s in sf.LocalIncludes) {
+        foreach (string s in sf.LocalIncludes)
+        {
             try
             {
                 string inc = Path.GetFullPath(Path.Combine(local_dir, s));
@@ -260,7 +263,7 @@ public class Scanner
             }
             catch (Exception e)
             {
-                Errors.Add($"Exception: \"{e.Message}\" for #include \"{s}\"");
+                Errors.Add(new ScanError($"Exception processing \"{s}\": {e.Message}", path));
             }
         }
 
@@ -318,9 +321,8 @@ public class Scanner
             }
             catch (Exception e)
             {
-                Errors.Add($"Exception: \"{e.Message}\" for #include <{s}>");
+                Errors.Add(new ScanError($"Exception processing <{s}>: {e.Message}", path));
             }
-
         }
 
         // Only treat each include as done once. Since we completely ignore preprocessor, for patterns like

@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:HeaderHero"
+        xmlns:parser="clr-namespace:HeaderHero.Parser"
         x:Class="HeaderHero.ReportWindow"
         Title="Report"
         Width="1000" Height="700"
@@ -50,7 +51,6 @@
         </TabItem>
         <TabItem Header="Includes">
             <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*,*" Margin="4" ColumnSpacing="4">
-
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Included by:"/>
                 <StackPanel Grid.Row="0" Grid.Column="1">
                     <TextBlock x:Name="CurrentFileLabel" FontWeight="Bold"/>
@@ -108,17 +108,25 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Header="Errors">
-            <ListBox x:Name="ErrorsList" Margin="12"/>
+
+        <TabItem Header="Errors" x:Name="ErrorsTab">
+            <DataGrid x:Name="ErrorsList"
+                      AutoGenerateColumns="True"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      GridLinesVisibility="None"
+                      CanUserResizeColumns="True"
+                      x:DataType="parser:ScanError" />
         </TabItem>
-        <TabItem Header="Missing Files">
-            <ListBox x:Name="MissingFilesList" Margin="12">
-                <ListBox.ItemTemplate>
-                    <DataTemplate x:DataType="local:MissingFilesRow">
-                        <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Origin}" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+
+        <TabItem Header="Missing Files" x:Name="MissingTab">
+            <DataGrid x:Name="MissingFilesList"
+                      AutoGenerateColumns="True"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      GridLinesVisibility="None"
+                      CanUserResizeColumns="True"
+                      x:DataType="local:MissingFilesRow" />
         </TabItem>
     </TabControl>
 </Window>

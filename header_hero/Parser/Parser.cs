@@ -72,7 +72,7 @@ static class Parser
         }
     }
 
-    public static Result ParseFile(string fullPath, List<string> errors)
+    public static Result ParseFile(string fullPath, List<ScanError> errors)
     {
         Result res = new Result();
         string[] lines = File.ReadAllLines(fullPath, Encoding.UTF8);
@@ -83,7 +83,7 @@ static class Parser
             {
                 ParseResult r = ParseLine(line, res);
                 if (r == ParseResult.Error)
-                    errors.Add("Could not parse line: " + line + " in file: " + fullPath);
+                    errors.Add(new ScanError($"Could not parse: {line}", fullPath));
             }
         }
         return res;
