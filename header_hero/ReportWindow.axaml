@@ -1,0 +1,132 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:HeaderHero"
+        xmlns:parser="clr-namespace:HeaderHero.Parser"
+        x:Class="HeaderHero.ReportWindow"
+        Title="Report"
+        Width="1000" Height="700"
+        MinWidth="400" MinHeight="300">
+    <Window.Styles>
+        <Styles>
+            <Style Selector="TabControl > TabItem">
+                <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}"/>
+                <Setter Property="FontWeight" Value="Normal"/>
+                <Setter Property="Padding" Value="6,4"/>
+                <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="3,3,0,0"/>
+            </Style>
+            <Style Selector="TabControl > TabItem:selected">
+                <Setter Property="Background" Value="{DynamicResource ThemeControlLowBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderHighBrush}"/>
+                <Setter Property="FontWeight" Value="Normal"/>
+            </Style>
+            <Style Selector="TabControl > TabItem:selected /template/ Border#PART_SelectedPipe">
+                <Setter Property="IsVisible" Value="false"/>
+            </Style>
+        </Styles>
+    </Window.Styles>
+    <Window.Resources>
+        <DataTemplate x:Key="ReportFileTemplate"
+                      x:DataType="local:Parser.ReportFile">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="{Binding count}" Width="60"/>
+                <TextBlock Text="{Binding name}"/>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
+    <TabControl x:Name="Tabs" Margin="8">
+        <TabItem Header="Report">
+            <Grid RowDefinitions="Auto,Auto,3*,Auto,3*,Auto,*" Margin="4">
+                <TextBox Grid.Row="0" x:Name="SummaryText" FontFamily="Consolas,Monaco,Courier New,Monospace" TextWrapping="NoWrap" IsReadOnly="True"/>
+                <TextBlock Grid.Row="1" Text="Biggest contributors:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="2" x:Name="BiggestList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+                <TextBlock Grid.Row="3" Text="Header Hubs:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="4" x:Name="HeaderHubsList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+                <TextBlock Grid.Row="5" Text="Precompiled Headers:" Margin="0,10,0,0" />
+                <ListBox Grid.Row="6" x:Name="PrecompiledHeadersList" ItemTemplate="{StaticResource ReportFileTemplate}" DoubleTapped="ReportFileList_OnDoubleTapped" />
+            </Grid>
+        </TabItem>
+        <TabItem Header="Includes">
+            <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*,*" Margin="4" ColumnSpacing="4">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Included by:"/>
+                <StackPanel Grid.Row="0" Grid.Column="1">
+                    <TextBlock x:Name="CurrentFileLabel" FontWeight="Bold"/>
+                    <Button x:Name="BackButton" HorizontalAlignment="Center" Content="← Back" Width="70" Click="BackButton_OnClick"/>
+                </StackPanel>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="Includes:"/>
+                <TextBox x:Name="FileDetailsText"
+                         Grid.Row="1" Grid.Column="1"
+                         IsReadOnly="True"
+                         AcceptsReturn="True"
+                         AcceptsTab="True"
+                         TextWrapping="Wrap"/>
+
+                <DataGrid Grid.Row="1" Grid.Column="0"
+                          x:Name="IncludedByList"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="Column"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          GridLinesVisibility="None"
+                          CanUserResizeColumns="True"
+                          x:DataType="local:IncludeRow"
+                          DoubleTapped="IncludesList_OnDoubleTapped">
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridCell.right-align > TextBlock">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="File" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="60" CellStyleClasses="right-align"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid Grid.Row="1" Grid.Column="2"
+                          x:Name="IncludesList"
+                          AutoGenerateColumns="False"
+                          HeadersVisibility="Column"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          GridLinesVisibility="None"
+                          CanUserResizeColumns="True"
+                          x:DataType="local:IncludeRow"
+                          DoubleTapped="IncludesList_OnDoubleTapped">
+                    <DataGrid.Styles>
+                        <Style Selector="DataGridCell.right-align > TextBlock">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                        </Style>
+                    </DataGrid.Styles>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="File" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="60" CellStyleClasses="right-align"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Errors" x:Name="ErrorsTab">
+            <DataGrid x:Name="ErrorsList"
+                      AutoGenerateColumns="True"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      GridLinesVisibility="None"
+                      CanUserResizeColumns="True"
+                      x:DataType="parser:ScanError" />
+        </TabItem>
+
+        <TabItem Header="Missing Files" x:Name="MissingTab">
+            <DataGrid x:Name="MissingFilesList"
+                      AutoGenerateColumns="True"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      GridLinesVisibility="None"
+                      CanUserResizeColumns="True"
+                      x:DataType="local:MissingFilesRow" />
+        </TabItem>
+    </TabControl>
+</Window>

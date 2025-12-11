@@ -1,173 +1,91 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace HeaderHero.Parser
+namespace HeaderHero.Parser;
+
+public class ReportFile(int count, string path)
 {
-    class Report
+    public int count { get; set; } = count;
+    public string path { get; } = path;
+    public string name { get; set; } = Path.GetFileName(path);
+}
+
+class Report
+{
+    readonly Data.Project _project;
+    readonly Analytics _analytics;
+
+    public readonly string summary;
+    public readonly List<ReportFile> largest;
+    public readonly List<ReportFile> hubs;
+    public readonly List<ReportFile> precompiled;
+
+    public Report(Data.Project project, Analytics analytics)
     {
-        Data.Project _project;
-        Analytics _analytics;
+        _project = project;
+        _analytics = analytics;
+        summary = GenerateSummary();
+        largest = GenerateLargestContributors();
+        hubs = GenerateHeaderHubs();
+        precompiled = GeneratePrecompiled();
+    }
 
-        public string HtmlFile { get { return Path.Combine(Path.GetTempPath(), "header_hero_report.html"); } }
-        public string CssFile { get { return Path.Combine(Path.GetTempPath(), "header_hero_report.css"); } }
+    List<ReportFile> AppendFileList(IEnumerable<KeyValuePair<string, int>> count)
+    {
+        return count.Select(kvp => new ReportFile(kvp.Value, kvp.Key)).ToList();
+    }
 
-        public Report(Data.Project project, Analytics analytics)
-        {
-            _project = project;
-            _analytics = analytics;
-        }
+    string GenerateSummary()
+    {
+        int pch_lines = _project.Files.Where(kvp => kvp.Value.Precompiled).Sum(kvp => kvp.Value.Lines);
+        int total_lines = _project.Files.Sum(kvp => kvp.Value.Lines) - pch_lines;
+        int total_parsed = _analytics.Items
+            .Where (kvp => Data.SourceFile.IsTranslationUnitPath(kvp.Key) && !_project.Files[kvp.Key].Precompiled)
+            .Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
+        float factor = total_lines == 0 ? 0.0f : total_parsed / (float)total_lines;
 
-        public void Generate()
-        {
-            GenerateCss();
-            GenerateHtml();
-        }
+        const int valueWidth = 12;
+        var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+        nfi.NumberGroupSeparator = " ";
 
-        void GenerateCss()
-        {
-            File.WriteAllBytes(CssFile, Encoding.UTF8.GetBytes(_css));
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"Files             {_project.Files.Count.ToString("N0",nfi),valueWidth} (scanned in {_project.ScanTime.TotalSeconds:0.0} sec)");
+        sb.AppendLine($"Total Lines       {total_lines.ToString("N0",nfi),valueWidth}");
+        sb.AppendLine($"Total Precompiled {pch_lines.ToString("N0",nfi),valueWidth}");
+        sb.AppendLine($"Total Parsed      {total_parsed.ToString("N0",nfi),valueWidth}");
+        sb.AppendLine($"Blowup Factor     {factor.ToString("0.00",nfi),valueWidth}");
+        return sb.ToString();
+    }
 
-        void AppendSummary(StringBuilder sb, IDictionary<string, string> count)
-        {
-            sb.AppendFormat("<table class=\"summary\">\n");
-            foreach (var kvp in count)
-                sb.AppendFormat("  <tr><th>{0}:</th> <td>{1}</td></tr>\n", kvp.Key, kvp.Value);
-            sb.AppendFormat("</table>\n");
-        }
+    List<ReportFile> GenerateLargestContributors()
+    {
+        var most = _analytics.Items
+            .ToDictionary(kvp => kvp.Key, kvp => _project.Files[kvp.Key].Lines *
+                                                 kvp.Value.TranslationUnitsIncludedBy.Count)
+            .Where(kvp => !_project.Files[kvp.Key].Precompiled)
+            .Where(kvp => kvp.Value > 0)
+            .OrderByDescending(kvp => kvp.Value);
+        return AppendFileList(most);
+    }
 
-        void AppendFileList(StringBuilder sb, string id, string header, IEnumerable<KeyValuePair<string, int>> count)
-        {
-            sb.AppendFormat("<a name=\"{0}\" />", id);
-            sb.AppendFormat("<h2>{0}</h2>\n\n", header);
+    List<ReportFile> GenerateHeaderHubs()
+    {
+        var hhubs = _analytics.Items
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.TranslationUnitsIncludedBy.Count)
+            .Where(kvp => kvp.Value > 0)
+            .OrderByDescending(kvp => kvp.Value);
+        return AppendFileList(hhubs);
+    }
 
-            sb.AppendFormat("<table class=\"list\">\n");
-            foreach (var kvp in count)
-                sb.AppendFormat("  <tr><th>{1:### ### ###}</th> <td><a href=\"http://inspect?{0}\">{2}</a></td></tr>\n", kvp.Key, kvp.Value, Path.GetFileName(kvp.Key));
-            sb.AppendFormat("</table>\n");
-        }
-
-        void GenerateHtml()
-        {
-            string html = _html;
-
-            StringBuilder sb = new StringBuilder();
-
-            // Summary
-            {
-                int pch_lines = _project.Files.Where(kvp => kvp.Value.Precompiled).Sum(kvp => kvp.Value.Lines);
-                int total_lines = _project.Files.Sum(kvp => kvp.Value.Lines) - pch_lines;
-                int total_parsed = _analytics.Items
-					.Where (kvp => Data.SourceFile.IsTranslationUnitPath(kvp.Key) && !_project.Files[kvp.Key].Precompiled)
-					.Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
-                float factor = (float)total_parsed / (float)total_lines;
-                Dictionary<string, string> table = new Dictionary<string, string> {
-                    {"Files", string.Format("{0:### ### ###}", _project.Files.Count)},
-                    {"Total Lines", string.Format("{0:### ### ###}", total_lines)},
-                    {"Total Precompiled", string.Format("{0:### ### ###} (<a href=\"#pch\">list</a>)", pch_lines)},
-                    {"Total Parsed", string.Format("{0:### ### ###}", total_parsed)},
-                    {"Blowup Factor", string.Format("{0:0.00} (<a href=\"#largest\">largest</a>, <a href=\"#hubs\">hubs</a>)", factor) }
-                };
-                AppendSummary(sb, table);
-            }
-
-            {
-                var most = _analytics.Items
-                    .ToDictionary(kvp => kvp.Key, kvp => _project.Files[kvp.Key].Lines *
-                        kvp.Value.TranslationUnitsIncludedBy.Count)
-                    .Where(kvp => !_project.Files[kvp.Key].Precompiled)
-                    .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "largest", "Biggest Contributors", most);
-            }
-
-            {
-                var hubs = _analytics.Items
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.AllIncludes.Count * kvp.Value.TranslationUnitsIncludedBy.Count)
-                    .Where(kvp => kvp.Value > 0)
-                    .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "hubs", "Header Hubs", hubs);
-            }
-
-            {
-                var pch = _project.Files
-                    .Where(kvp => kvp.Value.Precompiled)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Lines)
-                    .OrderByDescending(kvp => kvp.Value);
-                AppendFileList(sb, "pch", "Precompiled Headers", pch);
-            }
-
-            html = html.Replace("%CONTENT%", sb.ToString());
-
-            File.WriteAllBytes(HtmlFile, Encoding.UTF8.GetBytes(html));
-        }
-
-        public static string Generate(Data.Project p, Analytics a)
-        {
-            Report r = new Report(p, a);
-            r.Generate();
-            return r.HtmlFile;
-        }
-		
-		static private string _css = @"
-/* Reset */
-
-* {margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline}
-body {line-height:1;color:black;background:white}
-ol,ul {list-style:none}
-table {border-collapse:separate;border-spacing:0}
-caption,th,td {text-align:left;font-weight:normal}
-a {text-decoration:none;}
-
-body {
-  background: #fff; 
-  font: 12px/16px 'Segoe UI', 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;
-  font-weight: normal;
-  overflow-y: scroll;
-  margin: 10px;
-}
-
-h1 {
-  font: 16px;
-  margin: 10px 0px 10px 0px;
-}
-
-h2 {
-  font: 16px;
-  margin: 10px 0px 10px 0px;
-}
-
-.summary {
-  margin-left: 10px;
-}
-
-.summary th {
-  font-weight: bold;
-  padding-right: 10px;
-}
-
-.list {
-  margin-left: 20px;
-}
-
-.list th {
-  text-align: right;
-  padding-right: 10px;
-}";
-		static private string _html = @"
-<html>
-<head>
-    <link rel='stylesheet' type='text/css' media='screen' href='header_hero_report.css'/>
-</head>
-<body>
-
-<h1>Report</h1>
-
-%CONTENT%
-
-</body>
-</html>".Replace ("'", "\"");
+    List<ReportFile> GeneratePrecompiled()
+    {
+        var pch = _project.Files
+            .Where(kvp => kvp.Value.Precompiled)
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Lines)
+            .OrderByDescending(kvp => kvp.Value);
+        return AppendFileList(pch);
     }
 }

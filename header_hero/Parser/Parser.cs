@@ -1,102 +1,91 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace HeaderHero.Parser
+namespace HeaderHero.Parser;
+
+static class Parser
 {
-    class Parser
+    public class Result
     {
-        public class Result
-        {
-            public List<string> SystemIncludes {get; set;}
-            public List<string> LocalIncludes {get; set;}
-            public int Lines;
+        public List<string> SystemIncludes {get;} = [];
+        public List<string> LocalIncludes {get;} = [];
+        public int Lines;
+    }
 
-            public Result()
-            {
-                SystemIncludes = new List<string>();
-                LocalIncludes = new List<string>();
-            }
-        };
+    enum States { Start, Hash, Include, AngleBracket, Quote }
+    enum ParseResult { Ok, Error }
 
-        enum States { Start, Hash, Include, AngleBracket, Quote }
-        enum ParseResult { Ok, Error }
+    static ParseResult ParseLine(string line, Result result)
+    {
+        int i = 0;
+        int path_start = 0;
+        States state = States.Start;
 
-        static ParseResult ParseLine(string line, Result result)
-        {
-            int i = 0;
-            int path_start = 0;
-            States state = States.Start;
+        while (true) {
+            if (i >= line.Length)
+                return ParseResult.Error;
 
-            while (true) {
-                if (i >= line.Length)
+            char c = line[i];
+            ++i;
+
+            if (c == ' ' || c == '\t') {
+
+            } else if (state == States.Start) {
+                if (c == '#')
+                    state = States.Hash;
+                else if (c == '/') {
+                    if (i >= line.Length)
+                        return ParseResult.Error;
+                    if (line[i] == '/')
+                        return ParseResult.Ok; // Matched C++ style comment
+                } else
                     return ParseResult.Error;
-
-                char c = line[i];
-                ++i;
-               
-                if (c == ' ' || c == '\t') {
-                
-                } else if (state == States.Start) {
-                    if (c == '#')
-                        state = States.Hash;
-                    else if (c == '/') {
-                        if (i >= line.Length)
-                            return ParseResult.Error;
-                        if (line[i] == '/')
-                            return ParseResult.Ok; // Matched C++ style comment
-                    } else
-                        return ParseResult.Error;
-                } else if (state == States.Hash) {
-                    --i;
-                    if (line.IndexOf("include", i) == i) {
-                        i += 7;
-                        state = States.Include;
-                    } else
-                        return ParseResult.Ok; // Matched preprocessor other than #include
-                } else if (state == States.Include) {
-                    if (c == '<') {
-                        path_start = i;
-                        state = States.AngleBracket;
-                    } else if (c == '"') {
-                        path_start = i;
-                         state = States.Quote;
-                    } else
-                        return ParseResult.Error;
-                } else if (state == States.AngleBracket) {
-                    if (c == '>') {
-                        result.SystemIncludes.Add(line.Substring(path_start, i-path_start-1));
-                        return ParseResult.Ok;
-                    }
-                } else if (state == States.Quote) {
-                    if (c == '"') {
-                        result.LocalIncludes.Add(line.Substring(path_start, i-path_start-1));
-                        return ParseResult.Ok;
-                    }
+            } else if (state == States.Hash) {
+                --i;
+                if (line.IndexOf("include", i, StringComparison.Ordinal) == i) {
+                    i += 7;
+                    state = States.Include;
+                } else
+                    return ParseResult.Ok; // Matched preprocessor other than #include
+            } else if (state == States.Include) {
+                if (c == '<') {
+                    path_start = i;
+                    state = States.AngleBracket;
+                } else if (c == '"') {
+                    path_start = i;
+                    state = States.Quote;
+                } else
+                    return ParseResult.Error;
+            } else if (state == States.AngleBracket) {
+                if (c == '>') {
+                    result.SystemIncludes.Add(line.Substring(path_start, i-path_start-1));
+                    return ParseResult.Ok;
+                }
+            } else if (state == States.Quote) {
+                if (c == '"') {
+                    result.LocalIncludes.Add(line.Substring(path_start, i-path_start-1));
+                    return ParseResult.Ok;
                 }
             }
         }
+    }
 
-        /// <summary>
-        /// Simple parser... only looks for #include lines. Does not take #defines or comments into account.
-        /// </summary>
-        static public Result ParseFile(FileInfo fi, List<string> errors)
+    public static Result ParseFile(string fullPath, List<ScanError> errors)
+    {
+        Result res = new Result();
+        string[] lines = File.ReadAllLines(fullPath, Encoding.UTF8);
+        res.Lines = lines.Length;
+        foreach (string line in lines)
         {
-            Result res = new Result();
-            string[] lines = File.ReadAllLines(fi.FullName, Encoding.UTF8);
-            res.Lines = lines.Count();
-            foreach (string line in lines)
+            if (line.Contains('#', StringComparison.Ordinal) && line.Contains("include", StringComparison.Ordinal))
             {
-                if (line.Contains('#') && line.Contains("include"))
-                {
-                    ParseResult r = ParseLine(line, res);
-                    if (r == ParseResult.Error)
-                        errors.Add("Could not parse line: " + line + " in file: " + fi.FullName);
-                }
+                ParseResult r = ParseLine(line, res);
+                if (r == ParseResult.Error)
+                    errors.Add(new ScanError($"Could not parse: {line}", fullPath));
             }
-            return res;
         }
+        return res;
     }
 }

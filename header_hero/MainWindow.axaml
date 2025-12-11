@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="800" Height="600"
+        MinWidth="400" MinHeight="300"
+        x:Class="HeaderHero.MainWindow"
+        Title="Header Hero">
+    <NativeMenu.Menu>
+        <NativeMenu>
+            <NativeMenuItem Header="_File">
+                <NativeMenu>
+                    <NativeMenuItem Header="_New Project" Click="Menu_NewProject"/>
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="_Open Project..." Click="Menu_OpenProject"/>
+                    <NativeMenuItem Header="_Save Project" Click="Menu_SaveProject"/>
+                    <NativeMenuItem Header="_Save Project As..." Click="Menu_SaveProjectAs"/>
+                    <NativeMenuItemSeparator />
+                    <NativeMenuItem Header="_Quit" Click="Menu_Quit"/>
+                </NativeMenu>
+            </NativeMenuItem>
+        </NativeMenu>
+    </NativeMenu.Menu>
+    <DockPanel>
+        <NativeMenuBar DockPanel.Dock="Top" x:Name="MenuBar" />
+        <Grid Margin="12" ColumnDefinitions="100,*" RowDefinitions="Auto,3*,3*,*" RowSpacing="8" ColumnSpacing="8">
+            <Button Grid.Row="0" Grid.Column="0" Content="🔍 Scan" FontWeight="Bold" Click="Button_Scan" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Project dirs:"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="ProjectDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Include dirs:"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="IncludeDirsTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Precomp. header:"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="PchTextBox" AcceptsReturn="True" VerticalAlignment="Stretch"/>
+        </Grid>
+    </DockPanel>
+</Window>
