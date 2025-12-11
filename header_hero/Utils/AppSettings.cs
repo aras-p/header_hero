@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace HeaderHero;
+namespace HeaderHero.Utils;
 
 public sealed class AppSettings
 {

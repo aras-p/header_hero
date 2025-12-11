@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using HeaderHero.Utils;
 
 namespace HeaderHero;
 
