@@ -47,7 +47,7 @@ class Report
             .Sum(kvp => kvp.Value.TotalIncludeLines + _project.Files[kvp.Key].Lines);
         float factor = total_lines == 0 ? 0.0f : total_parsed / (float)total_lines;
 
-        const int valueWidth = 12;
+        const int valueWidth = 13;
         var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
         nfi.NumberGroupSeparator = " ";
 

@@ -32,8 +32,9 @@
         <DataTemplate x:Key="ReportFileTemplate"
                       x:DataType="local:Parser.ReportFile">
             <StackPanel Orientation="Horizontal" Spacing="12">
-                <TextBlock Text="{Binding count}" Width="60"/>
-                <TextBlock Text="{Binding name}"/>
+                <TextBlock Text="{Binding count}" Width="70"/>
+                <TextBlock Text="{Binding name}" Width="180"/>
+                <TextBlock Text="{Binding path}"/>
             </StackPanel>
         </DataTemplate>
     </Window.Resources>
@@ -81,8 +82,8 @@
                     </DataGrid.Styles>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="File" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" CellStyleClasses="right-align"/>
-                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="60" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="50" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="65" CellStyleClasses="right-align"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 <DataGrid Grid.Row="1" Grid.Column="2"
@@ -102,8 +103,8 @@
                     </DataGrid.Styles>
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="File" Binding="{Binding Name}" Width="*"/>
-                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="60" CellStyleClasses="right-align"/>
-                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="60" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Count" Binding="{Binding Count}" Width="50" CellStyleClasses="right-align"/>
+                        <DataGridTextColumn Header="Lines" Binding="{Binding Lines}" Width="65" CellStyleClasses="right-align"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
