@@ -14,7 +14,11 @@ public class SourceFile
 	{
 		return ext is ".cpp" or ".c" or ".cc" or ".cxx" or ".mm" or ".m";
 	}
-		
+	public static bool IsHeaderExtension(string ext)
+	{
+		return ext is ".h" or ".hh" or ".hpp" or ".hxx" or "" or ".";
+	}
+
 	public static bool IsTranslationUnitPath(string path)
 	{
 		return IsTranslationUnitExtension(System.IO.Path.GetExtension(path));

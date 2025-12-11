@@ -99,8 +99,13 @@ public class Scanner
         feedback.Title = "Scanning directories...";
         foreach (string dir in _project.ScanDirectories)
         {
-            feedback.Message = dir;
-            ScanDirectory(new DirectoryInfo(dir), feedback);
+            ScanDirForSourceFilesRecurse(new DirectoryInfo(dir));
+        }
+
+        feedback.Title = "Scanning headers...";
+        foreach (string dir in _project.IncludeDirectories)
+        {
+            ScanDirForHeaders(new DirectoryInfo(dir));
         }
 
         feedback.Title = "Scanning files...";
@@ -136,12 +141,10 @@ public class Scanner
         _project.ScanTime = sw.Elapsed;
     }
 
-    void ScanDirectory(DirectoryInfo di, ProgressFeedback feedback)
+    void ScanDirForSourceFilesRecurse(DirectoryInfo di)
     {
         FileInfo[] files;
         DirectoryInfo[] subdirs;
-
-        feedback.Message = di.FullName;
 
         try
         {
@@ -162,9 +165,33 @@ public class Scanner
                 Enqueue(fullPath, CanonicalPath(fullPath));
             }
         }
+
         foreach (DirectoryInfo subdir in subdirs)
+        {
             if (!subdir.Name.StartsWith('.'))
-                ScanDirectory(subdir, feedback);
+                ScanDirForSourceFilesRecurse(subdir);
+        }
+    }
+
+    void ScanDirForHeaders(DirectoryInfo di)
+    {
+        FileInfo[] files;
+        try
+        {
+            files = di.GetFiles();
+        }
+        catch
+        {
+            // ignore exceptions
+            return;
+        }
+        foreach (FileInfo file in files)
+        {
+            if (SourceFile.IsHeaderExtension(file.Extension))
+            {
+                _system_includes.TryAdd(file.Name, CanonicalPath(file.FullName));
+            }
+        }
     }
 
     // On a case-insensitive file system, this returns
@@ -248,6 +275,11 @@ public class Scanner
             {
                 if (_system_includes.TryGetValue(s, out var sysIncPath))
                 {
+                    // An entry in _system_includes might have been found during the include folders
+                    // scan; does not mean that all files under it are actually included into the project yet.
+                    // Make sure it is scanned (if already is, this will early out).
+                    Enqueue(sysIncPath, sysIncPath);
+
                     // found a header that's part of PCH during regular scan: ignore it
                     if (!_scanning_pch && ContainsPrecompiledPath(sysIncPath))
                     {
