@@ -1,4 +1,4 @@
-# Header Hero (Fork)
+# Header Hero (Fork/Rewrite)
 
 BitSquid back in 2011 released a nifty tool for analysing C++ header includes, see
 [Caring by Sharing: Header Hero](https://bitsquid.blogspot.com/2011/10/caring-by-sharing-header-hero.html) blog post
