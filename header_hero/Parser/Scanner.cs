@@ -56,7 +56,7 @@ public class Scanner
 
     bool IsCaseSensitive()
     {
-        foreach (string dir in _project.ScanDirectories)
+        foreach (string dir in _project.ScanDirectoriesRooted())
         {
             DirectoryInfo dl = new DirectoryInfo(dir.ToLowerInvariant());
             DirectoryInfo du = new DirectoryInfo(dir.ToUpperInvariant());
@@ -96,13 +96,13 @@ public class Scanner
         _scanning_pch = false;
 
         feedback.Title = "Scanning directories...";
-        foreach (string dir in _project.ScanDirectories)
+        foreach (string dir in _project.ScanDirectoriesRooted())
         {
             ScanDirForSourceFilesRecurse(new DirectoryInfo(dir));
         }
 
         feedback.Title = "Scanning headers...";
-        foreach (string dir in _project.IncludeDirectories)
+        foreach (string dir in _project.IncludeDirectoriesRooted())
         {
             ScanDirForHeaders(new DirectoryInfo(dir));
         }
@@ -289,7 +289,7 @@ public class Scanner
                 {
                     string found = null;
 
-                    foreach (string dir in _project.IncludeDirectories)
+                    foreach (string dir in _project.IncludeDirectoriesRooted())
                     {
                         found = Path.GetFullPath(Path.Combine(dir, s));
                         if (FileExists(found))

@@ -50,6 +50,7 @@ public partial class MainWindow : Window
 
     void ProjectFieldsToUI()
     {
+        RootTextBox.Text = _project.ProjectRoot ?? string.Empty;
         ProjectDirsTextBox.Text = string.Join("\r\n", _project.ScanDirectories.ToArray());
         IncludeDirsTextBox.Text = string.Join("\r\n", _project.IncludeDirectories.Except(_systemIncludes).ToArray());
         PchTextBox.Text = _project.PrecompiledHeader ?? string.Empty;
@@ -57,6 +58,7 @@ public partial class MainWindow : Window
 
     void ParseProjectFieldsFromUI()
     {
+        _project.ProjectRoot = RootTextBox.Text?.Trim() ?? "";
         _project.ScanDirectories = ProjectDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
         _project.IncludeDirectories = IncludeDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
         _project.IncludeDirectories.AddRange(_systemIncludes);
