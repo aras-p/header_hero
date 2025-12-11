@@ -14,12 +14,10 @@ public partial class ReportWindow : Window
 {
     Data.Project _project;
     Analytics _analytics;
-    Parser.Scanner _scanner;
-    string _inspecting;
-    LinkedList<string> _history = new LinkedList<string>();
+    Scanner _scanner;
+    readonly LinkedList<string> _history = [];
 
-
-    public ReportWindow(Data.Project project, Parser.Scanner scanner)
+    public ReportWindow(Data.Project project, Scanner scanner)
     {
         _history.Clear();
         _project = project;
@@ -36,7 +34,7 @@ public partial class ReportWindow : Window
         if (sender is not ListBox lb) return;
         if (lb.SelectedItem is not ReportFile rf) return;
         Inspect(rf.path);
-        Tabs.SelectedIndex = 1; // we'll build the Includes tab next
+        Tabs.SelectedIndex = 1;
     }
 
     void IncludesList_OnDoubleTapped(object sender, TappedEventArgs e)
@@ -56,7 +54,6 @@ public partial class ReportWindow : Window
 
     void Inspect(string file)
     {
-        _inspecting = file;
         if (_history.Count == 0 || _history.Last() != file)
         {
             _history.AddLast(file);
@@ -95,12 +92,12 @@ public partial class ReportWindow : Window
         }
     }
 
-    void Setup(Data.Project project, Parser.Scanner scanner)
+    void Setup(Data.Project project, Scanner scanner)
     {
         _history.Clear();
         _project = project;
         _scanner = scanner;
-        _analytics = Parser.Analytics.Analyze(_project);
+        _analytics = Analytics.Analyze(_project);
 
         ErrorsList.ItemsSource = scanner.Errors;
         var notFoundItems = scanner.NotFound
@@ -116,5 +113,4 @@ public partial class ReportWindow : Window
         HeaderHubsList.ItemsSource = rpt.hubs;
         PrecompiledHeadersList.ItemsSource = rpt.precompiled;
     }
-
 }

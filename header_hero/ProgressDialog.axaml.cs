@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using HeaderHero.Parser;
 
@@ -20,8 +18,6 @@ public partial class ProgressDialog : Window
     public void Start(Func<ProgressFeedback, Task> work)
     {
         _work = work;
-
-        // Show the dialog and then start the work
         Opened += async (_, _) =>
         {
             await RunWorkAsync();
@@ -38,7 +34,7 @@ public partial class ProgressDialog : Window
         {
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Console.WriteLine(ex); //@TODO: display error dialog?
+                Console.WriteLine(ex);
             });
         }
 
@@ -55,6 +51,4 @@ public partial class ProgressDialog : Window
         MessageLabel.Text = _feedback.Message;
         Title = _feedback.Title;
     }
-
-    public ProgressFeedback Feedback => _feedback;
 }

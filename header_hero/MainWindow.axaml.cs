@@ -27,7 +27,7 @@ public partial class MainWindow : Window
         if (OperatingSystem.IsMacOS())
             MenuBar.IsVisible = false;
 
-        this.Closing += OnWindowClosing;
+        Closing += OnWindowClosing;
 
         //@TODO
         //projectDirsTextBox.MouseDoubleClick += (_1, _2) => scan_AddDirectory_Click(_1, null);
@@ -40,7 +40,6 @@ public partial class MainWindow : Window
         if (!string.IsNullOrEmpty(lastProject) && File.Exists(lastProject))
         {
             Open(lastProject);
-            //ScanProject(); //@TODO
         }
     }
 
@@ -61,9 +60,9 @@ public partial class MainWindow : Window
     void MarkSave()
     {
         if (_curProjectPath != null)
-            this.Title = "Header Hero - " + _curProjectPath;
+            Title = "Header Hero - " + _curProjectPath;
         else
-            this.Title = "Header Hero";
+            Title = "Header Hero";
         _lastSaveProjectState = Sjson.Encode(_project.ToDict());
     }
 
@@ -73,7 +72,7 @@ public partial class MainWindow : Window
         if (_lastSaveProjectState == Sjson.Encode(_project.ToDict()))
             return true;
 
-        int choice = await new MessageBox3("Save Project?", "Project was modified, save changes?", new[]{"Save", "Do not save", "Cancel"}).ShowDialog<int>(this);
+        int choice = await new MessageBox3("Save Project?", "Project was modified, save changes?", "Save", "Do not save", "Cancel").ShowDialog<int>(this);
         switch (choice)
         {
             case 0: SaveProject(false); break;
@@ -101,7 +100,7 @@ public partial class MainWindow : Window
         if (!await AskSaveProject())
             return;
 
-        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions(){AllowMultiple = false, FileTypeFilter = PickerFileTypes});
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions {AllowMultiple = false, FileTypeFilter = PickerFileTypes});
         if (files is not {Count: > 0})
             return;
 
@@ -146,8 +145,8 @@ public partial class MainWindow : Window
         bool allow = await AskSaveProject();
         if (allow)
         {
-            this.Closing -= OnWindowClosing;
-            this.Close();
+            Closing -= OnWindowClosing;
+            Close();
         }
     }
 

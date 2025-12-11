@@ -8,7 +8,7 @@ public sealed class AppSettings
 {
     public string LastProject { get; set; }
 
-    static readonly Lazy<AppSettings> _instance = new(() => Load());
+    static readonly Lazy<AppSettings> _instance = new(Load);
     public static AppSettings Instance => _instance.Value;
 
     static string SettingsPath =>
