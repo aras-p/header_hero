@@ -6,7 +6,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
-using HeaderHero.Serialization;
 
 namespace HeaderHero;
 
@@ -14,7 +13,7 @@ public partial class MainWindow : Window
 {
     static readonly FilePickerFileType[] PickerFileTypes =
     [
-        new("Header Hero") { Patterns = ["*.header_hero"] }
+        new("JSON") { Patterns = ["*.json"] }
     ];
 
     string _curProjectPath;
@@ -33,7 +32,7 @@ public partial class MainWindow : Window
         //projectDirsTextBox.MouseDoubleClick += (_1, _2) => scan_AddDirectory_Click(_1, null);
         //includeDirsTextBox.MouseDoubleClick += (_1, _2) => include_AddDirectory_Click(_1, null);
 
-        _lastSaveProjectState = Sjson.Encode(_project.ToDict());
+        _lastSaveProjectState = _project.ToJson();
 
         var settings = AppSettings.Instance;
         var lastProject = settings.LastProject;
@@ -43,14 +42,14 @@ public partial class MainWindow : Window
         }
     }
 
-    void DisplayProject()
+    void ProjectFieldsToUI()
     {
         ProjectDirsTextBox.Text = string.Join("\r\n", _project.ScanDirectories.ToArray());
         IncludeDirsTextBox.Text = string.Join("\r\n", _project.IncludeDirectories.ToArray());
         PchTextBox.Text = _project.PrecompiledHeader ?? string.Empty;
     }
 
-    void ParseProject()
+    void ParseProjectFieldsFromUI()
     {
         _project.ScanDirectories = ProjectDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
         _project.IncludeDirectories = IncludeDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
@@ -63,19 +62,19 @@ public partial class MainWindow : Window
             Title = "Header Hero - " + _curProjectPath;
         else
             Title = "Header Hero";
-        _lastSaveProjectState = Sjson.Encode(_project.ToDict());
+        _lastSaveProjectState = _project.ToJson();
     }
 
     async Task<bool> AskSaveProject()
     {
-        ParseProject();
-        if (_lastSaveProjectState == Sjson.Encode(_project.ToDict()))
+        ParseProjectFieldsFromUI();
+        if (_lastSaveProjectState == _project.ToJson())
             return true;
 
         int choice = await new MessageBox3("Save Project?", "Project was modified, save changes?", "Save", "Do not save", "Cancel").ShowDialog<int>(this);
         switch (choice)
         {
-            case 0: SaveProject(false); break;
+            case 0: return await SaveProject(false);
             case 1: break;
             case 2: return false;
         }
@@ -91,7 +90,7 @@ public partial class MainWindow : Window
         AppSettings.Instance.Save();
         _curProjectPath = null;
         _project = new Data.Project();
-        DisplayProject();
+        ProjectFieldsToUI();
         MarkSave();
     }
 
@@ -114,45 +113,56 @@ public partial class MainWindow : Window
     {
         _curProjectPath = path;
         _project = new Data.Project();
-        _project.FromDict(Sjson.Load(path));
+        _project.FromJsonFile(path);
         MarkSave();
-        DisplayProject();
+        ProjectFieldsToUI();
     }
 
-    async void SaveProject(bool force_save_as)
+    async Task<bool> SaveProject(bool force_save_as)
     {
         if (_curProjectPath == null || force_save_as)
         {
-            var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions {SuggestedFileName = _curProjectPath != null ? Path.GetFileName(_curProjectPath) : "project.header_hero", FileTypeChoices = PickerFileTypes});
+            var result = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions {SuggestedFileName = _curProjectPath != null ? Path.GetFileName(_curProjectPath) : "header_hero_project.json", FileTypeChoices = PickerFileTypes});
             if (result == null)
-                return;
+                return false;
             _curProjectPath = result.TryGetLocalPath();
         }
 
         if (_curProjectPath == null)
-            return;
+            return false;
 
         AppSettings.Instance.LastProject = _curProjectPath;
         AppSettings.Instance.Save();
-        ParseProject();
-        Sjson.Save(_project.ToDict(), _curProjectPath);
+        ParseProjectFieldsFromUI();
+        File.WriteAllText(_curProjectPath, _project.ToJson());
         MarkSave();
+        return true;
     }
 
-    async void OnWindowClosing(object sender, WindowClosingEventArgs e)
+    bool _isCloseRequested;
+
+    void OnWindowClosing(object sender, WindowClosingEventArgs e)
     {
+        if (_isCloseRequested)
+            return;
         e.Cancel = true;
-        bool allow = await AskSaveProject();
-        if (allow)
+
+        // Since project save ask will show async dialogs, we have to do that in regular
+        // UI loop.
+        Dispatcher.UIThread.Post(async () =>
         {
-            Closing -= OnWindowClosing;
-            Close();
-        }
+            bool allow = await AskSaveProject();
+            if (allow)
+            {
+                _isCloseRequested = true;
+                Close();
+            }
+        });
     }
 
     async void ScanProject()
     {
-        ParseProject();
+        ParseProjectFieldsFromUI();
         var scanner = new Parser.Scanner(_project);
 
         ProgressDialog dlg = new ProgressDialog();
@@ -177,7 +187,7 @@ public partial class MainWindow : Window
 
         await dlg.ShowDialog(this);
 
-        DisplayProject();
+        ProjectFieldsToUI();
 
         ReportWindow report = new ReportWindow(_project, scanner);
         report.Show();
@@ -193,13 +203,14 @@ public partial class MainWindow : Window
         OpenProject();
     }
 
-    void Menu_SaveProject(object sender, EventArgs e)
+    async void Menu_SaveProject(object sender, EventArgs e)
     {
-        SaveProject(false);
+        await SaveProject(false);
     }
-    void Menu_SaveProjectAs(object sender, EventArgs e)
+
+    async void Menu_SaveProjectAs(object sender, EventArgs e)
     {
-        SaveProject(true);
+        await SaveProject(true);
     }
 
     void Menu_Quit(object sender, EventArgs e)
