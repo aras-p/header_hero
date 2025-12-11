@@ -14,7 +14,7 @@ public class Project
     public Dictionary<string, SourceFile> Files { get; } = new();
     public TimeSpan ScanTime { get; set; }
 
-    public string ToJson()
+    public string ToJson(List<string> systemIncludesToExclude)
     {
         using var stream = new MemoryStream();
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions {Indented = true} );
@@ -25,7 +25,10 @@ public class Project
         writer.WriteEndArray();
         writer.WriteStartArray("IncludeDirectories");
         foreach (var s in IncludeDirectories)
-            writer.WriteStringValue(s);
+        {
+            if (!systemIncludesToExclude.Contains(s))
+                writer.WriteStringValue(s);
+        }
         writer.WriteEndArray();
         writer.WriteString("PrecompiledHeader", PrecompiledHeader);
         writer.WriteEndObject();

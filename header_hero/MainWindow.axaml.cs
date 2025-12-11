@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ public partial class MainWindow : Window
     string _curProjectPath;
     string _lastSaveProjectState;
     Data.Project _project = new();
+    readonly List<string> _systemIncludes;
 
     public MainWindow()
     {
@@ -29,11 +31,14 @@ public partial class MainWindow : Window
 
         Closing += OnWindowClosing;
 
+        _systemIncludes = SystemIncludesLocator.FindSystemIncludes();
+        SystemIncludeDirsTextBox.Text = string.Join("\n", _systemIncludes);
+
         //@TODO
         //projectDirsTextBox.MouseDoubleClick += (_1, _2) => scan_AddDirectory_Click(_1, null);
         //includeDirsTextBox.MouseDoubleClick += (_1, _2) => include_AddDirectory_Click(_1, null);
 
-        _lastSaveProjectState = _project.ToJson();
+        _lastSaveProjectState = _project.ToJson(_systemIncludes);
 
         var settings = AppSettings.Instance;
         var lastProject = settings.LastProject;
@@ -46,7 +51,7 @@ public partial class MainWindow : Window
     void ProjectFieldsToUI()
     {
         ProjectDirsTextBox.Text = string.Join("\r\n", _project.ScanDirectories.ToArray());
-        IncludeDirsTextBox.Text = string.Join("\r\n", _project.IncludeDirectories.ToArray());
+        IncludeDirsTextBox.Text = string.Join("\r\n", _project.IncludeDirectories.Except(_systemIncludes).ToArray());
         PchTextBox.Text = _project.PrecompiledHeader ?? string.Empty;
     }
 
@@ -54,6 +59,7 @@ public partial class MainWindow : Window
     {
         _project.ScanDirectories = ProjectDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
         _project.IncludeDirectories = IncludeDirsTextBox.Text?.Split('\n', '\r').Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? [];
+        _project.IncludeDirectories.AddRange(_systemIncludes);
         _project.PrecompiledHeader = PchTextBox.Text?.Trim() ?? "";
     }
 
@@ -63,13 +69,13 @@ public partial class MainWindow : Window
             Title = "Header Hero - " + _curProjectPath;
         else
             Title = "Header Hero";
-        _lastSaveProjectState = _project.ToJson();
+        _lastSaveProjectState = _project.ToJson(_systemIncludes);
     }
 
     async Task<bool> AskSaveProject()
     {
         ParseProjectFieldsFromUI();
-        if (_lastSaveProjectState == _project.ToJson())
+        if (_lastSaveProjectState == _project.ToJson(_systemIncludes))
             return true;
 
         int choice = await new MessageBox3("Save Project?", "Project was modified, save changes?", "Save", "Do not save", "Cancel").ShowDialog<int>(this);
@@ -135,7 +141,7 @@ public partial class MainWindow : Window
         AppSettings.Instance.LastProject = _curProjectPath;
         AppSettings.Instance.Save();
         ParseProjectFieldsFromUI();
-        File.WriteAllText(_curProjectPath, _project.ToJson());
+        File.WriteAllText(_curProjectPath, _project.ToJson(_systemIncludes));
         MarkSave();
         return true;
     }
