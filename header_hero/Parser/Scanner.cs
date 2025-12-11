@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using HeaderHero.Data;
 
 namespace HeaderHero.Parser;
@@ -21,18 +18,18 @@ public class ProgressFeedback
 public class Scanner
 {
     readonly Project _project;
-    ConcurrentDictionary<string, byte> _queued;
+    HashSet<string> _queued;
 
-    ConcurrentDictionary<string, byte> _nextPass;
+    HashSet<string> _nextPass;
 
-    ConcurrentDictionary<string, string> _system_includes;
-    ConcurrentDictionary<string, bool> _file_existence;
+    Dictionary<string, string> _system_includes;
+    Dictionary<string, bool> _file_existence;
     bool _scanning_pch;
     bool CaseSensitive { get; }
 
-    public ConcurrentQueue<string> Errors;
-    public ConcurrentDictionary<string, byte> NotFound;
-    public ConcurrentDictionary<string, string> NotFoundOrigins;
+    public List<string> Errors;
+    public HashSet<string> NotFound;
+    public Dictionary<string, string> NotFoundOrigins;
 
     public Scanner(Project p)
     {
@@ -72,7 +69,7 @@ public class Scanner
         Stopwatch sw = Stopwatch.StartNew();
 
         Clear();
-        string[] currentPass = null;
+        string[] currentPass;
 
         feedback.Title = "Scanning precompiled header...";
 
@@ -83,13 +80,13 @@ public class Scanner
             var inc = Path.GetFullPath(_project.PrecompiledHeader);
             ScanFile(inc);
 
-            currentPass = _nextPass.Keys.ToArray();
+            currentPass = _nextPass.ToArray();
             _nextPass = [];
             while (currentPass.Length > 0)
             {
                 foreach (string path in currentPass)
                     ScanFile(path);
-                currentPass = _nextPass.Keys.ToArray();
+                currentPass = _nextPass.ToArray();
                 _nextPass = [];
             }
             _queued.Clear();
@@ -110,16 +107,14 @@ public class Scanner
 
         feedback.Title = "Scanning files...";
 
-        ParallelOptions parOptions = new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount, 4) };
-
-        currentPass = _nextPass.Keys.ToArray();
+        currentPass = _nextPass.ToArray();
         _nextPass = [];
         int processedCounter = 0;
         while (currentPass.Length > 0)
         {
-            Parallel.ForEach(currentPass, parOptions, path =>
+            foreach(var path in currentPass)
             {
-                int current = Interlocked.Increment(ref processedCounter);
+                int current = processedCounter++;
                 if ((current & 255) == 0)
                 {
                     lock (feedback)
@@ -130,8 +125,8 @@ public class Scanner
                     }
                 }
                 ScanFile(path);
-            });
-            currentPass = _nextPass.Keys.ToArray();
+            }
+            currentPass = _nextPass.ToArray();
             _nextPass = [];
         }
 
@@ -153,7 +148,7 @@ public class Scanner
         }
         catch (Exception e)
         {
-            Errors.Enqueue($"Cannot descend into {di.FullName}: {e.Message}");
+            Errors.Add($"Cannot descend into {di.FullName}: {e.Message}");
             return;
         }
 
@@ -215,9 +210,9 @@ public class Scanner
 
     void Enqueue(string fullPath, string abs)
     {
-        if (_queued.TryAdd(abs, 0))
+        if (_queued.Add(abs))
         {
-            _nextPass.TryAdd(fullPath, 0);
+            _nextPass.Add(fullPath);
         }
     }
 
@@ -239,7 +234,7 @@ public class Scanner
             SystemIncludes = res.SystemIncludes,
             Precompiled = _scanning_pch
         };
-        _project.Files.AddOrUpdate(path, sf, (_, __) => sf);
+        _project.Files[path] = sf;
 
         sf.AbsoluteIncludes.Clear();
 
@@ -265,7 +260,7 @@ public class Scanner
             }
             catch (Exception e)
             {
-                Errors.Enqueue($"Exception: \"{e.Message}\" for #include \"{s}\"");
+                Errors.Add($"Exception: \"{e.Message}\" for #include \"{s}\"");
             }
         }
 
@@ -314,16 +309,16 @@ public class Scanner
                     }
                     else
                     {
-                        if (NotFound.TryAdd(s, 0))
+                        if (NotFound.Add(s))
                         {
-                            NotFoundOrigins.TryAdd(s, path);
+                            NotFoundOrigins.Add(s, path);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                Errors.Enqueue($"Exception: \"{e.Message}\" for #include <{s}>");
+                Errors.Add($"Exception: \"{e.Message}\" for #include <{s}>");
             }
 
         }

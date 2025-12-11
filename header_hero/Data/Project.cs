@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace HeaderHero.Data;
@@ -9,7 +8,7 @@ public class Project
     public List<string> ScanDirectories { get; set; } = [];
     public List<string> IncludeDirectories { get; set; } = [];
     public string PrecompiledHeader { get; set; } = string.Empty;
-    public ConcurrentDictionary<string, SourceFile> Files { get; } = new();
+    public Dictionary<string, SourceFile> Files { get; } = new();
     public TimeSpan ScanTime { get; set; }
 
     public Dictionary<string, object> ToDict()

@@ -103,7 +103,7 @@ public partial class ReportWindow : Window
         _analytics = Parser.Analytics.Analyze(_project);
 
         ErrorsList.ItemsSource = scanner.Errors;
-        var notFoundItems = scanner.NotFound.Keys
+        var notFoundItems = scanner.NotFound
             .OrderBy(s => s)
             .Select(s => new MissingFilesRow(s, _scanner.NotFoundOrigins[s]))
             .ToList();

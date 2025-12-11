@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
@@ -14,7 +12,7 @@ static class Parser
         public List<string> SystemIncludes {get;} = [];
         public List<string> LocalIncludes {get;} = [];
         public int Lines;
-    };
+    }
 
     enum States { Start, Hash, Include, AngleBracket, Quote }
     enum ParseResult { Ok, Error }
@@ -74,7 +72,7 @@ static class Parser
         }
     }
 
-    public static Result ParseFile(string fullPath, ConcurrentQueue<string> errors)
+    public static Result ParseFile(string fullPath, List<string> errors)
     {
         Result res = new Result();
         string[] lines = File.ReadAllLines(fullPath, Encoding.UTF8);
@@ -85,7 +83,7 @@ static class Parser
             {
                 ParseResult r = ParseLine(line, res);
                 if (r == ParseResult.Error)
-                    errors.Enqueue("Could not parse line: " + line + " in file: " + fullPath);
+                    errors.Add("Could not parse line: " + line + " in file: " + fullPath);
             }
         }
         return res;
