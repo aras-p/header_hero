@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -8,24 +9,38 @@ namespace HeaderHero.Data;
 
 public class Project
 {
+    public string ProjectRoot { get; set; } = string.Empty;
     public List<string> ScanDirectories { get; set; } = [];
     public List<string> IncludeDirectories { get; set; } = [];
     public string PrecompiledHeader { get; set; } = string.Empty;
     public Dictionary<string, SourceFile> Files { get; } = new();
     public TimeSpan ScanTime { get; set; }
 
-    public string ToJson()
+    public IEnumerable<string> ScanDirectoriesRooted()
+    {
+        return ScanDirectories.Select(s => Path.IsPathFullyQualified(s) ? s : Path.Combine(ProjectRoot, s));
+    }
+    public IEnumerable<string> IncludeDirectoriesRooted()
+    {
+        return IncludeDirectories.Select(s => Path.IsPathFullyQualified(s) ? s : Path.Combine(ProjectRoot, s));
+    }
+
+    public string ToJson(List<string> systemIncludesToExclude)
     {
         using var stream = new MemoryStream();
         using var writer = new Utf8JsonWriter(stream, new JsonWriterOptions {Indented = true} );
         writer.WriteStartObject();
+        writer.WriteString("ProjectRoot", ProjectRoot);
         writer.WriteStartArray("ScanDirectories");
         foreach (var s in ScanDirectories)
             writer.WriteStringValue(s);
         writer.WriteEndArray();
         writer.WriteStartArray("IncludeDirectories");
         foreach (var s in IncludeDirectories)
-            writer.WriteStringValue(s);
+        {
+            if (!systemIncludesToExclude.Contains(s))
+                writer.WriteStringValue(s);
+        }
         writer.WriteEndArray();
         writer.WriteString("PrecompiledHeader", PrecompiledHeader);
         writer.WriteEndObject();
@@ -35,6 +50,7 @@ public class Project
 
     public void FromJsonFile(string filePath)
     {
+        ProjectRoot = string.Empty;
         ScanDirectories = [];
         IncludeDirectories = [];
         PrecompiledHeader = string.Empty;
@@ -44,6 +60,7 @@ public class Project
         {
             var json = File.ReadAllText(filePath);
             using var doc = JsonDocument.Parse(json);
+            ProjectRoot = GetString("ProjectRoot", doc.RootElement) ?? string.Empty;
             ScanDirectories = GetStringList("ScanDirectories", doc.RootElement);
             IncludeDirectories = GetStringList("IncludeDirectories", doc.RootElement);
             PrecompiledHeader = GetString("PrecompiledHeader", doc.RootElement) ?? string.Empty;

@@ -14,62 +14,81 @@ static class Parser
         public int Lines;
     }
 
-    enum States { Start, Hash, Include, AngleBracket, Quote }
-    enum ParseResult { Ok, Error }
+    static bool WordAt(string s, int index, string word)
+    {
+        if (index < 0 || index + word.Length > s.Length)
+            return false;
 
-    static ParseResult ParseLine(string line, Result result)
+        return s.AsSpan(index, word.Length).SequenceEqual(word);
+    }
+
+    static bool SkipSpace(string s, ref int i)
+    {
+        while (i < s.Length && char.IsWhiteSpace(s[i]))
+            ++i;
+        if (i >= s.Length)
+            return false;
+        return true;
+    }
+
+    static bool ParseLine(string line, Result result)
     {
         int i = 0;
-        int path_start = 0;
-        States state = States.Start;
+        if (!SkipSpace(line, ref i))
+            return true;
 
-        while (true) {
-            if (i >= line.Length)
-                return ParseResult.Error;
+        // is a preprocessor macro?
+        if (line[i] != '#')
+            return true;
+        ++i;
 
-            char c = line[i];
-            ++i;
+        if (!SkipSpace(line, ref i))
+            return true;
 
-            if (c == ' ' || c == '\t') {
+        // has "include"?
+        string keyword = "include";
+        if (!WordAt(line, i, keyword))
+            return true;
+        i += keyword.Length;
+        if (i >= line.Length || (!char.IsWhiteSpace(line[i]) && line[i] != '<' && line[i] != '"'))
+            return false; // malformed include
+        if (!SkipSpace(line, ref i))
+            return false; // malformed include
 
-            } else if (state == States.Start) {
-                if (c == '#')
-                    state = States.Hash;
-                else if (c == '/') {
-                    if (i >= line.Length)
-                        return ParseResult.Error;
-                    if (line[i] == '/')
-                        return ParseResult.Ok; // Matched C++ style comment
-                } else
-                    return ParseResult.Error;
-            } else if (state == States.Hash) {
-                --i;
-                if (line.IndexOf("include", i, StringComparison.Ordinal) == i) {
-                    i += 7;
-                    state = States.Include;
-                } else
-                    return ParseResult.Ok; // Matched preprocessor other than #include
-            } else if (state == States.Include) {
-                if (c == '<') {
-                    path_start = i;
-                    state = States.AngleBracket;
-                } else if (c == '"') {
-                    path_start = i;
-                    state = States.Quote;
-                } else
-                    return ParseResult.Error;
-            } else if (state == States.AngleBracket) {
-                if (c == '>') {
-                    result.SystemIncludes.Add(line.Substring(path_start, i-path_start-1));
-                    return ParseResult.Ok;
-                }
-            } else if (state == States.Quote) {
-                if (c == '"') {
-                    result.LocalIncludes.Add(line.Substring(path_start, i-path_start-1));
-                    return ParseResult.Ok;
-                }
+        // angled or quoted?
+        bool angled;
+        if (line[i] == '<')
+            angled = true;
+        else if (line[i] == '"')
+            angled = false;
+        else
+            return false; // malformed include or include w/ a define
+        ++i;
+
+        // scan the name
+        int nameStart = i;
+        while (i < line.Length)
+        {
+            if (angled && line[i] == '>')
+            {
+                int nameEnd = i - 1;
+                if (nameEnd == nameStart)
+                    return false; // empty include
+                result.SystemIncludes.Add(line.Substring(nameStart, nameEnd-nameStart+1));
+                return true;
             }
+            if (!angled && line[i] == '"')
+            {
+                int nameEnd = i - 1;
+                if (nameEnd == nameStart)
+                    return false; // empty include
+                result.LocalIncludes.Add(line.Substring(nameStart, nameEnd-nameStart+1));
+                return true;
+            }
+            ++i;
         }
+
+        return false; // non-terminated include name
     }
 
     public static Result ParseFile(string fullPath, List<ScanError> errors)
@@ -79,12 +98,8 @@ static class Parser
         res.Lines = lines.Length;
         foreach (string line in lines)
         {
-            if (line.Contains('#', StringComparison.Ordinal) && line.Contains("include", StringComparison.Ordinal))
-            {
-                ParseResult r = ParseLine(line, res);
-                if (r == ParseResult.Error)
-                    errors.Add(new ScanError($"Could not parse: {line}", fullPath));
-            }
+            if (!ParseLine(line, res))
+                errors.Add(new ScanError($"Could not parse: {line}", fullPath));
         }
         return res;
     }

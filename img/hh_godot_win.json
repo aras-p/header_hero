@@ -1,0 +1,20 @@
+{
+  "ProjectRoot": "C:\\code\\projects\\other\\godot",
+  "ScanDirectories": [
+    "core",
+    "drivers",
+    "editor",
+    "main",
+    "modules",
+    "platform",
+    "scene",
+    "servers"
+  ],
+  "IncludeDirectories": [
+    ".",
+    "thirdparty\\graphite\\src",
+    "thirdparty\\jolt_physics",
+    "thirdparty\\mbedtls\\include"
+  ],
+  "PrecompiledHeader": ""
+}
