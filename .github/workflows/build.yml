@@ -43,5 +43,5 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: HeaderHero-${{ matrix.rid }}
+        name: HeaderHero-${{ matrix.rid }}.zip
         path: out/${{ matrix.rid }}      
