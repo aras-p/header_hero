@@ -1,0 +1,47 @@
+
+name: Build Header Hero
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        rid: [win-x64, osx-arm64, linux-x64]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Restore
+      working-directory: header_hero
+      run: dotnet restore
+
+    - name: Publish ${{ matrix.rid }}
+      working-directory: header_hero
+      run: |
+        dotnet publish \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            /p:PublishSingleFile=true \
+            /p:PublishTrimmed=true \
+            /p:TrimMode=link \
+            -o ../out/${{ matrix.rid }}
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HeaderHero-${{ matrix.rid }}
+        path: out/${{ matrix.rid }}      
