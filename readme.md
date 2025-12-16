@@ -1,6 +1,10 @@
 # Header Hero (Fork/Rewrite)
 
-BitSquid back in 2011 released a nifty tool for analysing C++ header includes, see
+A tool for analyzing C/C++ codebase header dependencies. Header Hero recursively scans source code directories and maps out
+`#include` relationships. It can point out the "worst" headers in terms of total aggregate line count, or "most included" headers
+where changing them would cause the most recompiles. Hopefully it can help you reduce the header inclusion issues.
+
+This is a fork/rewrite of an old tool made by (now defunct) BitSquid game engine back in 2011, see
 [Caring by Sharing: Header Hero](https://bitsquid.blogspot.com/2011/10/caring-by-sharing-header-hero.html) blog post
 ([webarchive link](https://web.archive.org/web/20250430235425/https://bitsquid.blogspot.com/2011/10/caring-by-sharing-header-hero.html)).
 The original Bitbucket repository of that tool is long gone by now.
